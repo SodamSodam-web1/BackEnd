@@ -1,8 +1,8 @@
 package goormton.backend.sodamsodam.global.error;
 
-import goormton.backend.web1team.global.payload.ApiResponse;
-import goormton.backend.web1team.global.payload.ErrorCode;
-import goormton.backend.web1team.global.payload.ErrorResponse;
+import goormton.backend.sodamsodam.global.payload.ApiResponse;
+import goormton.backend.sodamsodam.global.payload.ErrorCode;
+import goormton.backend.sodamsodam.global.payload.ErrorResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.AuthenticationException;
@@ -12,21 +12,21 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-@RestControllerAdvice(annotations = {RestController.class})
+@RestControllerAdvice(annotations = RestController.class)
 public class ExceptionHandlerAdvice {
 
-//    api 관련 예외에 관한 핸들링
-    @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
-    public ResponseEntity<?> handleHttpRequestMethodNotSupportedException(HttpRequestMethodNotSupportedException e) {
-        final ErrorResponse response = ErrorResponse.builder()
-                .httpStatus(HttpStatus.METHOD_NOT_ALLOWED)
-                .code(e.getMessage())
-                .clazz(e.getMethod())
-                .message(e.getMessage())
-                .build();
-        ApiResponse apiResponse = ApiResponse.builder().check(false).information(response).build();
-        return new ResponseEntity<>(apiResponse, HttpStatus.METHOD_NOT_ALLOWED);
-    }
+    // api 관련 예외에 대한 핸들링
+//    @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
+//    public ResponseEntity<?> handleHttpRequestMethodNotSupportedException(HttpRequestMethodNotSupportedException e) {
+//        final ErrorResponse response = ErrorResponse.builder()
+//                .httpStatus(HttpStatus.METHOD_NOT_ALLOWED)
+//                .code(e.getMessage())
+//                .clazz(e.getMethod())
+//                .message(e.getMessage())
+//                .build();
+//        ApiResponse apiResponse = ApiResponse.builder().check(false).information(response).build();
+//        return new ResponseEntity<>(apiResponse, HttpStatus.METHOD_NOT_ALLOWED);
+//    }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<?> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
@@ -53,7 +53,7 @@ public class ExceptionHandlerAdvice {
         return new ResponseEntity<>(apiResponse, HttpStatus.BAD_REQUEST);
     }
 
-//    자바 자체 내부 예외에 관한 핸들링
+    //    자바 자체 내부 예외에 관한 핸들링
     @ExceptionHandler(Exception.class)
     protected ResponseEntity<?> handleException(Exception e) {
         ErrorResponse response = ErrorResponse.builder()

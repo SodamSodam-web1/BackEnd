@@ -1,6 +1,6 @@
 package goormton.backend.sodamsodam.global.error;
 
-import goormton.backend.web1team.global.payload.ErrorCode;
+import goormton.backend.sodamsodam.global.payload.ErrorCode;
 import lombok.Getter;
 
 @Getter
