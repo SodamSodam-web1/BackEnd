@@ -6,6 +6,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
@@ -61,6 +62,15 @@ public class UserPrincipal implements UserDetails, OAuth2User {
     @Override
     public Map<String, Object> getAttributes() {
         return attributes;
+    }
+
+    // 해당 User의 권한을 리턴하는 곳
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        Collection<GrantedAuthority> collection = new ArrayList<>();
+        collection.add(
+                (GrantedAuthority) () -> String.valueOf(user.getRole()));
+        return collection;
     }
 
     @Override

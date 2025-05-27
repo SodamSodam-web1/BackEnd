@@ -3,6 +3,8 @@ package goormton.backend.sodamsodam.domain.user.application.oauth;
 import goormton.backend.sodamsodam.domain.user.domain.User;
 import goormton.backend.sodamsodam.domain.user.domain.UserPrincipal;
 import goormton.backend.sodamsodam.domain.user.domain.UserRole;
+import goormton.backend.sodamsodam.domain.user.domain.oauth.KakaoUserInfo;
+import goormton.backend.sodamsodam.domain.user.domain.oauth.OAuth2UserInfo;
 import goormton.backend.sodamsodam.domain.user.domain.repository.UserRepository;
 import goormton.backend.sodamsodam.global.error.DefaultExeption;
 import goormton.backend.sodamsodam.global.payload.ErrorCode;
@@ -14,6 +16,8 @@ import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -32,38 +36,34 @@ public class PrincipalOauth2UserService extends DefaultOAuth2UserService {
         log.info("userRequest.access_Token.Token_value  : {}",userRequest.getAccessToken().getTokenValue());
 
         OAuth2User oAuth2User = super.loadUser(userRequest);
-        // 위 request 정보를 토대로 강제 회원가입 진행
-        // 구글로그인버튼 -> 구글로그인 창 -> 로그인 완료 -> 사용자 정보 code를 리턴 받음(userRequest에 담김) -> code를 토대로 Access Token 요청
-        //
-        // userRequest 정보를 토대로
-        // -> 회원 프로필을 받아야함 (loadUser 함수) -> 구글로부터 회원 프로필을 받아줌
-        log.info("userRequest.getAttributes : {}", super.loadUser(userRequest).getAttributes());
+        OAuth2UserInfo oAuth2UserInfo = null;
 
-        // kakao
-        String provider = userRequest.getClientRegistration().getRegistrationId();
-        String provider_id = oAuth2User.getAttribute("id"); // provid
-
-        String email = oAuth2User.getAttribute("email");
-        String username = provider + provider_id; // google_sub
-        String password = passwordEncoder.encode("getInthere");
-        UserRole role = UserRole.USER;
-
-        User userEntity = userRepository.findByEmail(email).orElseThrow(() -> new DefaultExeption(ErrorCode.USER_NOT_FOUND_ERROR));
-
-        if (userEntity == null) {
-            userEntity = User.builder()
-                    .username(username)
-                    .email(email)
-                    .password(password)
-                    .provider(provider)
-                    .provider_id(provider_id)
-                    .role(role)
-                    .build();
-            userRepository.save(userEntity);
+        if (userRequest.getClientRegistration().getRegistrationId().equals("kakao")) {
+            oAuth2UserInfo = new KakaoUserInfo(oAuth2User.getAttributes());
         } else {
-            log.info("최초 로그인이 아닙니다.");
+            log.info("지원하지 않는 소셜입니다.");
         }
-        return new UserPrincipal(userEntity, oAuth2User.getAttributes());
-    }
 
+        Optional<User> userEntity = userRepository.findByProviderAndProviderId(oAuth2UserInfo.getProvider(), oAuth2UserInfo.getProviderId());
+
+        User user;
+        if (userEntity.isPresent()) {
+            user = userEntity.get();
+            user.toBuilder()
+                    .email(oAuth2UserInfo.getEmail())
+                    .build();
+            userRepository.save(user);
+        } else {
+            user = User.builder()
+                    .username(oAuth2UserInfo.getProvider() + "_" + oAuth2UserInfo.getProviderId())
+                    .email(oAuth2UserInfo.getEmail())
+                    .provider(oAuth2UserInfo.getProvider())
+                    .providerId(oAuth2UserInfo.getProviderId())
+                    .role(UserRole.USER)
+                    .build();
+            userRepository.save(user);
+        }
+
+        return new UserPrincipal(user, oAuth2User.getAttributes());
+    }
 }

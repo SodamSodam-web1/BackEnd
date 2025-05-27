@@ -31,16 +31,16 @@ public class User extends BaseEntity {
     private UserRole role;
 
     private String provider;
-    private String provider_id;
+    private String providerId;
 
     @Builder(toBuilder = true)
-    User(String username, String email, String password, String profile_picture, UserRole role, String provider, String provider_id) {
+    User(String username, String email, String password, String profile_picture, UserRole role, String provider, String providerId) {
         this.username = username;
         this.email = email;
         this.password = password;
         this.profile_picture = profile_picture;
         this.role = role;
         this.provider = provider;
-        this.provider_id = provider_id;
+        this.providerId = providerId;
     }
 }
