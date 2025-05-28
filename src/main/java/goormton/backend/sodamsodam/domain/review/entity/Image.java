@@ -10,10 +10,6 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 public class Image extends BaseEntity {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
     private String url;
 
     @ManyToOne(fetch = FetchType.LAZY)
