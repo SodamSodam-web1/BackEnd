@@ -14,6 +14,9 @@ import java.util.List;
 @NoArgsConstructor
 @Schema(description = "장소별 리뷰 목록 응답 DTO")
 public class PlaceReviewListResponseDto {
+    @Schema(description = "장소 ID")
+    private String placeId;
+
     @Schema(description = "리뷰 응답 리스트")
     private List<ReviewResponseDto> reviews;
 

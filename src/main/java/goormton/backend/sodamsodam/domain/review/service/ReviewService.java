@@ -66,6 +66,7 @@ public class ReviewService {
         long totalCount = reviewPage.getTotalElements();
 
         return PlaceReviewListResponseDto.builder()
+                .placeId(placeId)
                 .reviews(reviewDtos)
                 .hasNext(reviewPage.hasNext())
                 .totalCount(totalCount)
