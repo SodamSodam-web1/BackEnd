@@ -6,8 +6,6 @@ import goormton.backend.sodamsodam.domain.user.domain.UserRole;
 import goormton.backend.sodamsodam.domain.user.domain.oauth.KakaoUserInfo;
 import goormton.backend.sodamsodam.domain.user.domain.oauth.OAuth2UserInfo;
 import goormton.backend.sodamsodam.domain.user.domain.repository.UserRepository;
-import goormton.backend.sodamsodam.global.error.DefaultExeption;
-import goormton.backend.sodamsodam.global.payload.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -25,7 +23,7 @@ import java.util.Optional;
 public class PrincipalOauth2UserService extends DefaultOAuth2UserService {
 
     private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
+//    private final PasswordEncoder passwordEncoder;
 
     // 구글로 부터 받은 userRequest에 대한 후처리 함수
     // 함수 종료시 @AuthenticationPrincipal 어노테이션이 만들어짐.

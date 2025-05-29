@@ -45,7 +45,7 @@ public class UserPrincipal implements UserDetails, OAuth2User {
 
     @Override
     public String getPassword() {
-        return null;
+        return user.getPassword();
     }
 
     // 아이디에 해당하는 username을 email로 사용

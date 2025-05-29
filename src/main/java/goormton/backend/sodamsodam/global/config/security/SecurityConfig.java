@@ -1,5 +1,7 @@
 package goormton.backend.sodamsodam.global.config.security;
 
+import goormton.backend.sodamsodam.global.util.jwt.JWTAuthenticationFilter;
+import goormton.backend.sodamsodam.global.util.jwt.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.Bean;
@@ -12,16 +14,20 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
 @EnableAutoConfiguration
 @RequiredArgsConstructor
 public class SecurityConfig {
+
+    private final JwtUtil jwtUtil;
+    private final UserDetailsService userDetailsService;
 
     private static final String[] AUTH_WHITELIST = {
             "/swagger-ui/**",
@@ -34,7 +40,7 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-//        JwtFilter jwtFilter = new JwtFilter(jwtUtil, userDetailsService);
+        JWTAuthenticationFilter jwtFilter = new JWTAuthenticationFilter(jwtUtil, userDetailsService);
 
         http
 //                cors 설정
@@ -61,10 +67,8 @@ public class SecurityConfig {
 //                                혹시 모를 다른 모든 요청 역시 인증 필요
                                 .anyRequest().authenticated()
                 )
-                // oauth 로그인 후처리
-
 //                jwt 필터 설정
-//                .addFilterBefore(jwtFilter, BasicAuthenticationFilter.class)
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
 //                로그아웃 설정 추가
 //                .logout(logout -> logout
 //                        .logoutUrl("/api/auth/logout")

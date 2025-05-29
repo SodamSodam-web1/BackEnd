@@ -49,11 +49,11 @@ public class JwtUtil {
     }
 
 //    jwt로부터 정보 추출
-    public Long getIdFromRefreshToken(String token) {
+    public Long getIdFromToken(String token) {
         return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("id", Long.class);
     }
 
-    public String getUsernameFromRefreshToken(String token) {
+    public String getUsernameFromToken(String token) {
         return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("username", String.class);
     }
 
@@ -62,8 +62,8 @@ public class JwtUtil {
     }
 
 //    jwt 유효성 검증
-    public Boolean validateRefreshToken(String token) {
-        final String username = getUsernameFromRefreshToken(token);
+    public Boolean validateToken(String token) {
+        final String username = getUsernameFromToken(token);
         return (!isTokenExpired(token));
     }
 
