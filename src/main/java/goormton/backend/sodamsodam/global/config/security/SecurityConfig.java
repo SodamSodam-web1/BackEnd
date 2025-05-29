@@ -21,7 +21,8 @@ public class SecurityConfig {
                                 "/webjars/**",
                                 "/places/**/reviews" //TODO: 리뷰 작성 임시 테스트용, 추후 jwt 적용 후 제거 예정
                         ).permitAll()
-                        .anyRequest().authenticated()
+                        // 임시로 모든 요청 허용
+                        .anyRequest().permitAll()
                 )
                 .formLogin().disable()
                 .httpBasic().disable()
