@@ -1,0 +1,113 @@
+package goormton.backend.sodamsodam.domain.place.service;
+
+import goormton.backend.sodamsodam.domain.place.dto.KakaoApiResponseDto;
+import goormton.backend.sodamsodam.domain.place.dto.PlaceResponseDto;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.client.WebClient;
+
+import java.net.URI;
+import java.util.List;
+import java.util.stream.Collectors;
+
+@Slf4j
+@Service
+@RequiredArgsConstructor
+public class PlaceService {
+
+    @Qualifier("kakaoWebClient")
+    private final WebClient webClient;
+
+    @Value("${kakao.api.key}")
+    private String kakaoApiKey;
+
+    public List<PlaceResponseDto> searchPlaces(String query, String x, String y, Integer radius) {
+        try {
+            log.info("Searching places with query: {}, x: {}, y: {}, radius: {}", query, x, y, radius);
+            log.info("Using Kakao API Key: {}", kakaoApiKey);
+            log.info("Authorization Header: KakaoAK {}", kakaoApiKey);
+
+            KakaoApiResponseDto response = webClient.get()
+                    .uri(uriBuilder -> {
+                        URI uri = uriBuilder
+                                .path("/v2/local/search/keyword.json")
+                                .queryParam("query", query)
+                                .queryParam("x", x)
+                                .queryParam("y", y)
+                                .queryParam("radius", radius)
+                                .build();
+                        log.info("Request URI: {}", uri);
+                        return uri;
+                    })
+                    .header("Authorization", "KakaoAK " + kakaoApiKey)
+                    .header("Content-Type", "application/json;charset=UTF-8")
+                    .retrieve()
+                    .bodyToMono(KakaoApiResponseDto.class) // 여기에서 DTO 클래스로 변환
+                    .doOnNext(body -> log.info("Kakao API response: {}", body))
+                    .doOnError(error -> log.error("Kakao API Error: {}", error.getMessage()))
+                    .block();
+
+
+            if (response != null && response.getDocuments() != null) {
+                return response.getDocuments().stream()
+                        .map(PlaceResponseDto::from)
+                        .collect(Collectors.toList());
+            }
+
+            return List.of();
+
+        } catch (Exception e) {
+            log.error("Error occurred while searching places: ", e);
+            return List.of();
+        }
+    }
+
+    public List<PlaceResponseDto> searchByCategory(
+            String category_group_code,
+            String x,
+            String y,
+            Integer radius) {
+        try {
+            log.info("Searching by category: {}, x: {}, y: {}, radius: {}", category_group_code, x, y, radius);
+            log.info("Using Kakao API Key: {}", kakaoApiKey);
+            log.info("Authorization Header: KakaoAK {}", kakaoApiKey);
+
+            KakaoApiResponseDto response = webClient.get()
+                    .uri(uriBuilder -> {
+                        URI uri = uriBuilder
+                                .path("/v2/local/search/category.json")
+                                .queryParam("category_group_code", category_group_code)
+                                .queryParam("x", x)
+                                .queryParam("y", y)
+                                .queryParam("radius", radius != null ? radius : 1000)
+                                .build();
+                        log.info("Request URI: {}", uri);
+                        return uri;
+                    })
+                    .header("Authorization", "KakaoAK " + kakaoApiKey)
+                    .header("Content-Type", "application/json;charset=UTF-8")
+                    .retrieve()
+                    .bodyToMono(KakaoApiResponseDto.class)
+                    .doOnNext(body -> log.info("Kakao API raw response: {}", body))
+                    .doOnError(error -> log.error("Kakao API Error: {}", error.getMessage()))
+                    .block();
+
+            log.info("Kakao API Response received");
+
+            if (response != null && response.getDocuments() != null) {
+                return response.getDocuments().stream()
+                        .map(PlaceResponseDto::from)
+                        .collect(Collectors.toList());
+            }
+
+            return List.of();
+
+        } catch (Exception e) {
+            log.error("Error occurred while searching by category: ", e);
+            return List.of();
+        }
+    }
+}
