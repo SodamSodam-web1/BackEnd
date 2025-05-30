@@ -1,11 +1,9 @@
 package goormton.backend.sodamsodam.domain.review.service;
 
-import goormton.backend.sodamsodam.domain.review.dto.PlaceReviewListResponseDto;
-import goormton.backend.sodamsodam.domain.review.dto.ReviewCreateRequestDto;
-import goormton.backend.sodamsodam.domain.review.dto.ReviewCreateResponseDto;
-import goormton.backend.sodamsodam.domain.review.dto.ReviewResponseDto;
+import goormton.backend.sodamsodam.domain.review.dto.*;
 import goormton.backend.sodamsodam.domain.review.entity.Image;
 import goormton.backend.sodamsodam.domain.review.entity.Review;
+import goormton.backend.sodamsodam.domain.review.enums.ReviewTag;
 import goormton.backend.sodamsodam.domain.review.repository.ImageRepository;
 import goormton.backend.sodamsodam.domain.review.repository.ReviewRepository;
 import goormton.backend.sodamsodam.domain.user.entity.User;
@@ -71,5 +69,53 @@ public class ReviewService {
                 .hasNext(reviewPage.hasNext())
                 .totalCount(totalCount)
                 .build();
+    }
+
+    @Transactional
+    public ReviewUpdateResponseDto updateReview(Long userId, Long reviewId, ReviewUpdateRequestDto dto) {
+        Review review = reviewRepository.findById(reviewId)
+                .orElseThrow(() -> new DefaultExeption(ErrorCode.REVIEW_NOT_FOUND_ERROR));
+
+        if (!review.getUser().getId().equals(userId)) {
+            throw new DefaultExeption(ErrorCode.FORBIDDEN_REVIEW_UPDATE);
+        }
+
+        Review.ReviewBuilder builder = review.toBuilder();
+
+        if (dto.getContent() != null) {
+            builder.content(dto.getContent());
+        }
+
+        if (dto.getTags() != null && !dto.getTags().isEmpty()) {
+            List<ReviewTag> tags = dto.getTags();
+            builder
+                    .tag1(tags.get(0))
+                    .tag2(tags.size() > 1 ? tags.get(1) : null)
+                    .tag3(tags.size() > 2 ? tags.get(2) : null);
+        }
+
+        Review updatedReview = builder.build();
+
+        review.update(
+                updatedReview.getContent(),
+                updatedReview.getTag1(),
+                updatedReview.getTag2(),
+                updatedReview.getTag3()
+        );
+
+        if (dto.getImageUrls() != null) {
+            imageRepository.deleteAllByReview(review);
+
+            List<Image> newImages = dto.getImageUrls().stream()
+                    .map(url -> Image.builder()
+                            .url(url)
+                            .review(review)
+                            .build())
+                    .toList();
+
+            imageRepository.saveAll(newImages);
+        }
+
+        return new ReviewUpdateResponseDto(review.getId());
     }
 }
