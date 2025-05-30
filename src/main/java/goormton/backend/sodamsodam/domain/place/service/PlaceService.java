@@ -24,12 +24,8 @@ public class PlaceService {
     @Value("${kakao.api.key}")
     private String kakaoApiKey;
 
-    public List<PlaceResponseDto> searchPlaces(String query, String x, String y, Integer radius) {
+    public List<PlaceResponseDto> searchByKeyword(String query, String x, String y, Integer radius) {
         try {
-            log.info("Searching places with query: {}, x: {}, y: {}, radius: {}", query, x, y, radius);
-            log.info("Using Kakao API Key: {}", kakaoApiKey);
-            log.info("Authorization Header: KakaoAK {}", kakaoApiKey);
-
             KakaoApiResponseDto response = webClient.get()
                     .uri(uriBuilder -> {
                         URI uri = uriBuilder
@@ -37,16 +33,14 @@ public class PlaceService {
                                 .queryParam("query", query)
                                 .queryParam("x", x)
                                 .queryParam("y", y)
-                                .queryParam("radius", radius)
+                                .queryParam("radius", radius != null ? radius : 10000)
                                 .build();
-                        log.info("Request URI: {}", uri);
                         return uri;
                     })
                     .header("Authorization", "KakaoAK " + kakaoApiKey)
                     .header("Content-Type", "application/json;charset=UTF-8")
                     .retrieve()
-                    .bodyToMono(KakaoApiResponseDto.class) // 여기에서 DTO 클래스로 변환
-                    .doOnNext(body -> log.info("Kakao API response: {}", body))
+                    .bodyToMono(KakaoApiResponseDto.class)
                     .doOnError(error -> log.error("Kakao API Error: {}", error.getMessage()))
                     .block();
 
@@ -71,10 +65,6 @@ public class PlaceService {
             String y,
             Integer radius) {
         try {
-            log.info("Searching by category: {}, x: {}, y: {}, radius: {}", category_group_code, x, y, radius);
-            log.info("Using Kakao API Key: {}", kakaoApiKey);
-            log.info("Authorization Header: KakaoAK {}", kakaoApiKey);
-
             KakaoApiResponseDto response = webClient.get()
                     .uri(uriBuilder -> {
                         URI uri = uriBuilder
@@ -82,7 +72,7 @@ public class PlaceService {
                                 .queryParam("category_group_code", category_group_code)
                                 .queryParam("x", x)
                                 .queryParam("y", y)
-                                .queryParam("radius", radius != null ? radius : 1000)
+                                .queryParam("radius", radius != null ? radius : 10000)
                                 .build();
                         log.info("Request URI: {}", uri);
                         return uri;
@@ -91,11 +81,9 @@ public class PlaceService {
                     .header("Content-Type", "application/json;charset=UTF-8")
                     .retrieve()
                     .bodyToMono(KakaoApiResponseDto.class)
-                    .doOnNext(body -> log.info("Kakao API raw response: {}", body))
                     .doOnError(error -> log.error("Kakao API Error: {}", error.getMessage()))
                     .block();
 
-            log.info("Kakao API Response received");
 
             if (response != null && response.getDocuments() != null) {
                 return response.getDocuments().stream()
