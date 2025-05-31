@@ -24,6 +24,8 @@ public enum ErrorCode {
     REVIEW_NOT_FOUND_ERROR(HttpStatus.NOT_FOUND, null , "리뷰를 찾을 수 없습니다."),
     FORBIDDEN_REVIEW_UPDATE(HttpStatus.FORBIDDEN, null, "본인의 리뷰만 수정할 수 있습니다."),
     DUPLICATE_REVIEW_TAGS(HttpStatus.BAD_REQUEST, null , "리뷰 태그에 중복된 항목이 존재합니다."),
+    FORBIDDEN_REVIEW_DELETE(HttpStatus.FORBIDDEN, null, "본인의 리뷰만 삭제할 수 있습니다."),
+
     // JWT 토큰
     JWT_EXPIRED_ERROR(HttpStatus.BAD_REQUEST, null, "JWT 토큰이 만료되었습니다."),
     ;

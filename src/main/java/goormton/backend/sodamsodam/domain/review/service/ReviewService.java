@@ -107,6 +107,19 @@ public class ReviewService {
         }
     }
 
+    @Transactional
+    public void deleteReview(Long userId, Long reviewId) {
+        Review review = reviewRepository.findById(reviewId)
+                .orElseThrow(() -> new DefaultExeption(ErrorCode.REVIEW_NOT_FOUND_ERROR));
+
+        if (!review.getUser().getId().equals(userId)) {
+            throw new DefaultExeption(ErrorCode.FORBIDDEN_REVIEW_DELETE);
+        }
+
+        imageRepository.deleteAllByReview(review);
+        reviewRepository.delete(review);
+    }
+
     private void validateDuplicateTags(List<ReviewTag> tags) {
         if (tags == null) return;
 
