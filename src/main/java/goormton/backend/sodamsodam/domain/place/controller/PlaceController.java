@@ -1,6 +1,7 @@
 package goormton.backend.sodamsodam.domain.place.controller;
 
 import goormton.backend.sodamsodam.domain.place.dto.PlaceResponseDto;
+import goormton.backend.sodamsodam.domain.place.dto.SearchHistoryDto;
 import goormton.backend.sodamsodam.domain.place.service.PlaceService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -61,5 +62,18 @@ public class PlaceController {
 
         List<PlaceResponseDto> places = placeService.searchByCategory(category_group_code, x, y, radius);
         return ResponseEntity.ok(places);
+    }
+
+    @Operation(summary = "검색 기록 조회", description = "저장된 검색 기록을 조회합니다.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "검색 기록 조회 성공",
+            content = @Content(schema = @Schema(implementation = SearchHistoryDto.class)))
+    })
+    @GetMapping("/search-histories")
+    public ResponseEntity<List<SearchHistoryDto>> getSearchHistories() {
+        // TODO: 로그인한 사용자 정보를 받아와서 user 변수에 할당
+        // 예시: @AuthenticationPrincipal User user
+        // User user = ...;
+        return ResponseEntity.ok(placeService.getSearchHistories(null));
     }
 }

@@ -2,6 +2,10 @@ package goormton.backend.sodamsodam.domain.place.service;
 
 import goormton.backend.sodamsodam.domain.place.dto.KakaoApiResponseDto;
 import goormton.backend.sodamsodam.domain.place.dto.PlaceResponseDto;
+import goormton.backend.sodamsodam.domain.place.entity.Search;
+import goormton.backend.sodamsodam.domain.place.repository.SearchRepository;
+import goormton.backend.sodamsodam.domain.place.dto.SearchHistoryDto;
+import goormton.backend.sodamsodam.domain.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -24,7 +28,10 @@ public class PlaceService {
     @Value("${kakao.api.key}")
     private String kakaoApiKey;
 
+    private final SearchRepository searchRepository;
+
     public List<PlaceResponseDto> searchByKeyword(String query, String x, String y, Integer radius) {
+        searchRepository.save(new Search(query, null));
         try {
             KakaoApiResponseDto response = webClient.get()
                     .uri(uriBuilder -> {
@@ -64,6 +71,7 @@ public class PlaceService {
             String x,
             String y,
             Integer radius) {
+        searchRepository.save(new Search(category_group_code, null));
         try {
             KakaoApiResponseDto response = webClient.get()
                     .uri(uriBuilder -> {
@@ -97,5 +105,11 @@ public class PlaceService {
             log.error("Error occurred while searching by category: ", e);
             return List.of();
         }
+    }
+
+    public List<SearchHistoryDto> getSearchHistories(User user) {
+        return searchRepository.findAllByUser(user).stream()
+                .map(s -> new SearchHistoryDto(s.getSearchContent(), s.getCreatedAt()))
+                .collect(Collectors.toList());
     }
 }
