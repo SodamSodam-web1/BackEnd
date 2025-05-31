@@ -16,7 +16,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Service
 @AllArgsConstructor
@@ -80,28 +82,16 @@ public class ReviewService {
             throw new DefaultExeption(ErrorCode.FORBIDDEN_REVIEW_UPDATE);
         }
 
-        Review.ReviewBuilder builder = review.toBuilder();
-
-        if (dto.getContent() != null) {
-            builder.content(dto.getContent());
+        List<ReviewTag> tags = dto.getTags();
+        if (tags != null && !tags.isEmpty()) {
+            validateDuplicateTags(tags);
         }
 
-        if (dto.getTags() != null && !dto.getTags().isEmpty()) {
-            List<ReviewTag> tags = dto.getTags();
-            builder
-                    .tag1(tags.get(0))
-                    .tag2(tags.size() > 1 ? tags.get(1) : null)
-                    .tag3(tags.size() > 2 ? tags.get(2) : null);
-        }
+        ReviewTag tag1 = tags != null && !tags.isEmpty() ? tags.get(0) : null;
+        ReviewTag tag2 = tags != null && tags.size() > 1 ? tags.get(1) : null;
+        ReviewTag tag3 = tags != null && tags.size() > 2 ? tags.get(2) : null;
 
-        Review updatedReview = builder.build();
-
-        review.update(
-                updatedReview.getContent(),
-                updatedReview.getTag1(),
-                updatedReview.getTag2(),
-                updatedReview.getTag3()
-        );
+        review.update(dto.getContent(), tag1, tag2, tag3);
 
         if (dto.getImageUrls() != null) {
             imageRepository.deleteAllByReview(review);
@@ -117,5 +107,14 @@ public class ReviewService {
         }
 
         return new ReviewUpdateResponseDto(review.getId());
+    }
+
+    private void validateDuplicateTags(List<ReviewTag> tags) {
+        if (tags == null) return;
+
+        Set<ReviewTag> tagSet = new HashSet<>(tags);
+        if (tagSet.size() != tags.size()) {
+            throw new DefaultExeption(ErrorCode.DUPLICATE_REVIEW_TAGS);
+        }
     }
 }

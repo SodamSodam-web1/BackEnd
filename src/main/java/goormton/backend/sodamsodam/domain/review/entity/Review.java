@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder(toBuilder = true)
+@Builder
 
 public class Review extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)

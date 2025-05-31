@@ -2,6 +2,7 @@ package goormton.backend.sodamsodam.domain.review.dto;
 
 import goormton.backend.sodamsodam.domain.review.enums.ReviewTag;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -15,6 +16,7 @@ import java.util.List;
 @Schema(description = "리뷰 수정 요청 DTO")
 public class ReviewUpdateRequestDto {
     @Schema(description = "리뷰 본문 내용", example = "맛있어요.")
+    @NotBlank(message = "리뷰 내용을 입력해주세요.")
     private String content;
 
     @Schema(description = "리뷰 태그 목록 (최대 3개)")
