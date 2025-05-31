@@ -74,7 +74,7 @@ public class ReviewService {
     }
 
     @Transactional
-    public ReviewUpdateResponseDto updateReview(Long userId, Long reviewId, ReviewUpdateRequestDto dto) {
+    public void updateReview(Long userId, Long reviewId, ReviewUpdateRequestDto dto) {
         Review review = reviewRepository.findById(reviewId)
                 .orElseThrow(() -> new DefaultExeption(ErrorCode.REVIEW_NOT_FOUND_ERROR));
 
@@ -105,8 +105,6 @@ public class ReviewService {
 
             imageRepository.saveAll(newImages);
         }
-
-        return new ReviewUpdateResponseDto(review.getId());
     }
 
     private void validateDuplicateTags(List<ReviewTag> tags) {

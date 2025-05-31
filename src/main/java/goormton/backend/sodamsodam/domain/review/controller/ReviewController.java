@@ -46,13 +46,13 @@ public class ReviewController {
 
     @Operation(summary = "리뷰 수정",description = "본인이 작성한 리뷰의 내용을 수정합니다.")
     @PatchMapping("reviews/{reviewId}")
-    public ResponseCustom<ReviewUpdateResponseDto> updateReview(
+    public ResponseCustom<Void> updateReview(
             //@AuthenticationPrincipal(expression = "userId") Long userId, TODO: JWT 인증 연동 후 해제
             @RequestHeader("X-USER-ID") Long userId,
-            @PathVariable String reviewId,
+            @PathVariable Long reviewId,
             @Valid @RequestBody ReviewUpdateRequestDto requestDto
             ){
-        ReviewUpdateResponseDto responseDto = reviewService.updateReview(userId, Long.parseLong(reviewId), requestDto);
+        reviewService.updateReview(userId, reviewId, requestDto);
         return ResponseCustom.OK();
     }
 }
