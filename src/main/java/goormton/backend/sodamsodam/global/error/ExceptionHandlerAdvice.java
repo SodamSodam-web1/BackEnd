@@ -64,8 +64,8 @@ public class ExceptionHandlerAdvice {
         return new ResponseEntity<>(apiResponse, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    @ExceptionHandler(DefaultExeption.class)
-    protected ResponseEntity<?> handleDefaultExeption(DefaultExeption e) {
+    @ExceptionHandler(DefaultException.class)
+    protected ResponseEntity<?> handleDefaultExeption(DefaultException e) {
         ErrorCode errorCode = e.getErrorCode();
         ErrorResponse response = ErrorResponse.builder()
                 .httpStatus(errorCode.getHttpStatus())
