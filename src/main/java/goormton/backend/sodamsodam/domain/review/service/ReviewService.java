@@ -1,11 +1,9 @@
 package goormton.backend.sodamsodam.domain.review.service;
 
-import goormton.backend.sodamsodam.domain.review.dto.PlaceReviewListResponseDto;
-import goormton.backend.sodamsodam.domain.review.dto.ReviewCreateRequestDto;
-import goormton.backend.sodamsodam.domain.review.dto.ReviewCreateResponseDto;
-import goormton.backend.sodamsodam.domain.review.dto.ReviewResponseDto;
+import goormton.backend.sodamsodam.domain.review.dto.*;
 import goormton.backend.sodamsodam.domain.review.entity.Image;
 import goormton.backend.sodamsodam.domain.review.entity.Review;
+import goormton.backend.sodamsodam.domain.review.enums.ReviewTag;
 import goormton.backend.sodamsodam.domain.review.repository.ImageRepository;
 import goormton.backend.sodamsodam.domain.review.repository.ReviewRepository;
 import goormton.backend.sodamsodam.domain.user.entity.User;
@@ -18,7 +16,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Service
 @AllArgsConstructor
@@ -71,5 +71,48 @@ public class ReviewService {
                 .hasNext(reviewPage.hasNext())
                 .totalCount(totalCount)
                 .build();
+    }
+
+    @Transactional
+    public void updateReview(Long userId, Long reviewId, ReviewUpdateRequestDto dto) {
+        Review review = reviewRepository.findById(reviewId)
+                .orElseThrow(() -> new DefaultExeption(ErrorCode.REVIEW_NOT_FOUND_ERROR));
+
+        if (!review.getUser().getId().equals(userId)) {
+            throw new DefaultExeption(ErrorCode.FORBIDDEN_REVIEW_UPDATE);
+        }
+
+        List<ReviewTag> tags = dto.getTags();
+        if (tags != null && !tags.isEmpty()) {
+            validateDuplicateTags(tags);
+        }
+
+        ReviewTag tag1 = tags != null && !tags.isEmpty() ? tags.get(0) : null;
+        ReviewTag tag2 = tags != null && tags.size() > 1 ? tags.get(1) : null;
+        ReviewTag tag3 = tags != null && tags.size() > 2 ? tags.get(2) : null;
+
+        review.update(dto.getContent(), tag1, tag2, tag3);
+
+        if (dto.getImageUrls() != null) {
+            imageRepository.deleteAllByReview(review);
+
+            List<Image> newImages = dto.getImageUrls().stream()
+                    .map(url -> Image.builder()
+                            .url(url)
+                            .review(review)
+                            .build())
+                    .toList();
+
+            imageRepository.saveAll(newImages);
+        }
+    }
+
+    private void validateDuplicateTags(List<ReviewTag> tags) {
+        if (tags == null) return;
+
+        Set<ReviewTag> tagSet = new HashSet<>(tags);
+        if (tagSet.size() != tags.size()) {
+            throw new DefaultExeption(ErrorCode.DUPLICATE_REVIEW_TAGS);
+        }
     }
 }

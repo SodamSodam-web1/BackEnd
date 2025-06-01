@@ -8,7 +8,7 @@ import lombok.*;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
+@Builder(toBuilder = true)
 public class Image extends BaseEntity {
     private String url;
 

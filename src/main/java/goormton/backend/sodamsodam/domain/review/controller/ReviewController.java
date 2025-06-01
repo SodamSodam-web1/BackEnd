@@ -1,8 +1,6 @@
 package goormton.backend.sodamsodam.domain.review.controller;
 
-import goormton.backend.sodamsodam.domain.review.dto.PlaceReviewListResponseDto;
-import goormton.backend.sodamsodam.domain.review.dto.ReviewCreateRequestDto;
-import goormton.backend.sodamsodam.domain.review.dto.ReviewCreateResponseDto;
+import goormton.backend.sodamsodam.domain.review.dto.*;
 import goormton.backend.sodamsodam.domain.review.service.ReviewService;
 import goormton.backend.sodamsodam.global.payload.ResponseCustom;
 import io.swagger.v3.oas.annotations.Operation;
@@ -35,6 +33,7 @@ public class ReviewController {
         ReviewCreateResponseDto responseDto = reviewService.createReview(userId, placeId, requestDto);
         return ResponseCustom.CREATED(responseDto);
     }
+
     @Operation(summary = "장소 리뷰 목록 조회",description = "특정 장소에 달린 모든 리뷰를 최신순으로 가져옵니다. ")
     @GetMapping("/places/{placeId}/reviews")
     public ResponseCustom<PlaceReviewListResponseDto> getPlaceReviews(
@@ -43,5 +42,17 @@ public class ReviewController {
     ) {
         PlaceReviewListResponseDto responseDto = reviewService.getPlaceReviews(placeId, pageable);
         return ResponseCustom.OK(responseDto);
+    }
+
+    @Operation(summary = "리뷰 수정",description = "본인이 작성한 리뷰의 내용을 수정합니다.")
+    @PatchMapping("reviews/{reviewId}")
+    public ResponseCustom<Void> updateReview(
+            //@AuthenticationPrincipal(expression = "userId") Long userId, TODO: JWT 인증 연동 후 해제
+            @RequestHeader("X-USER-ID") Long userId,
+            @PathVariable Long reviewId,
+            @Valid @RequestBody ReviewUpdateRequestDto requestDto
+            ){
+        reviewService.updateReview(userId, reviewId, requestDto);
+        return ResponseCustom.OK();
     }
 }
