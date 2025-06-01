@@ -1,7 +1,9 @@
 package goormton.backend.sodamsodam.global.config.security;
 
+import goormton.backend.sodamsodam.domain.user.application.oauth.PrincipalOauth2UserService;
 import goormton.backend.sodamsodam.global.util.jwt.JWTAuthenticationFilter;
 import goormton.backend.sodamsodam.global.util.jwt.JwtUtil;
+import goormton.backend.sodamsodam.global.util.jwt.OAuth2SuccessHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.Bean;
@@ -17,6 +19,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.client.registration.ClientRegistration;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
@@ -28,6 +31,7 @@ public class SecurityConfig {
 
     private final JwtUtil jwtUtil;
     private final UserDetailsService userDetailsService;
+    private final OAuth2SuccessHandler oAuth2SuccessHandler;
 
     private static final String[] AUTH_WHITELIST = {
             "/swagger-ui/**",
@@ -39,7 +43,7 @@ public class SecurityConfig {
     };
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain filterChain(HttpSecurity http, PrincipalOauth2UserService principalOauth2UserService) throws Exception {
         JWTAuthenticationFilter jwtFilter = new JWTAuthenticationFilter(jwtUtil, userDetailsService);
 
         http
@@ -69,6 +73,12 @@ public class SecurityConfig {
                 )
 //                jwt 필터 설정
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
+//                kakao 로그인 설정
+                .oauth2Login(oauth -> oauth
+                        .userInfoEndpoint(u -> u
+                                .userService(principalOauth2UserService))
+                        .successHandler(oAuth2SuccessHandler)
+                )
 //                로그아웃 설정 추가
 //                .logout(logout -> logout
 //                        .logoutUrl("/api/auth/logout")
