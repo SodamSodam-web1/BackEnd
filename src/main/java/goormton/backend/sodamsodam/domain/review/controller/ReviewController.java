@@ -17,14 +17,14 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("")
+@RequestMapping("/api/")
 @Tag(name = "리뷰", description = "리뷰 관련 API")
 
 public class ReviewController {
     private final ReviewService reviewService;
 
     @Operation(summary = "리뷰 작성",description = "특정 장소에 대한 리뷰를 작성합니다.")
-    @PostMapping("/places/{placeId}/reviews")
+    @PostMapping("places/{placeId}/reviews")
     public ResponseCustom<ReviewCreateResponseDto> createReview(
             //@AuthenticationPrincipal(expression = "userId") Long userId, TODO: JWT 인증 연동 후 해제
             @RequestHeader("X-USER-ID") Long userId,
@@ -36,7 +36,7 @@ public class ReviewController {
     }
 
     @Operation(summary = "장소 리뷰 목록 조회",description = "특정 장소에 달린 모든 리뷰를 최신순으로 가져옵니다. ")
-    @GetMapping("/places/{placeId}/reviews")
+    @GetMapping("places/{placeId}/reviews")
     public ResponseCustom<PlaceReviewListResponseDto> getPlaceReviews(
             @PathVariable String placeId,
             @Parameter(hidden = true) @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable
