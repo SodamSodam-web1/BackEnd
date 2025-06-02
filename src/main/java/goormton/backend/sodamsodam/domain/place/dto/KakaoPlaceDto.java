@@ -4,7 +4,7 @@ import lombok.Data;
 import java.util.List;
 
 @Data
-public class KakaoApiResponseDto {
+public class KakaoPlaceDto {
 
     private Meta meta;
     private List<Document> documents;
