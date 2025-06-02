@@ -110,10 +110,10 @@ public class ReviewService {
     @Transactional
     public void deleteReview(Long userId, Long reviewId) {
         Review review = reviewRepository.findById(reviewId)
-                .orElseThrow(() -> new DefaultExeption(ErrorCode.REVIEW_NOT_FOUND_ERROR));
+                .orElseThrow(() -> new DefaultException(ErrorCode.REVIEW_NOT_FOUND_ERROR));
 
         if (!review.getUser().getId().equals(userId)) {
-            throw new DefaultExeption(ErrorCode.FORBIDDEN_REVIEW_DELETE);
+            throw new DefaultException(ErrorCode.FORBIDDEN_REVIEW_DELETE);
         }
 
         imageRepository.deleteAllByReview(review);
