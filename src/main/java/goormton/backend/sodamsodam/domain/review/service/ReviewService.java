@@ -16,6 +16,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -127,5 +128,28 @@ public class ReviewService {
         if (tagSet.size() != tags.size()) {
             throw new DefaultException(ErrorCode.DUPLICATE_REVIEW_TAGS);
         }
+    }
+
+    @Transactional(readOnly = true)
+    public ReviewEditResponseDto getReviewForEdit(Long userId, Long reviewId) {
+        Review review = reviewRepository.findById(reviewId)
+                .orElseThrow(() -> new DefaultException(ErrorCode.REVIEW_NOT_FOUND_ERROR));
+
+        if (!review.getUser().getId().equals(userId)) {
+            throw new DefaultException(ErrorCode.FORBIDDEN_REVIEW_UPDATE);
+        }
+
+        List<String> imageUrls = imageRepository.findUrlsByReviewId(reviewId);
+
+        List<ReviewTag> tags = new ArrayList<>();
+        if (review.getTag1() != null) tags.add(review.getTag1());
+        if (review.getTag2() != null) tags.add(review.getTag2());
+        if (review.getTag3() != null) tags.add(review.getTag3());
+
+        return ReviewEditResponseDto.builder()
+                .content(review.getContent())
+                .tags(tags)
+                .imageUrls(imageUrls)
+                .build();
     }
 }

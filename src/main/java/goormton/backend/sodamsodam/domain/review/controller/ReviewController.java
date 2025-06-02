@@ -5,13 +5,14 @@ import goormton.backend.sodamsodam.domain.review.service.ReviewService;
 import goormton.backend.sodamsodam.global.payload.ResponseCustom;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -65,5 +66,21 @@ public class ReviewController {
     ){
         reviewService.deleteReview(userId, reviewId);
         return ResponseCustom.OK();
+    }
+
+    @Operation(summary = "본인 리뷰 단건 조회", description = "리뷰 수정 전, 본인이 작성한 리뷰의 내용을 불러옵니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "리뷰 조회 성공"),
+            @ApiResponse(responseCode = "403", description = "본인이 작성한 리뷰가 아님"),
+            @ApiResponse(responseCode = "404", description = "리뷰를 찾을 수 없음")
+    })
+    @GetMapping("reviews/{reviewId}")
+    public ResponseCustom<ReviewEditResponseDto> getReviewForEdit(
+            //@AuthenticationPrincipal(expression = "userId") Long userId, TODO: JWT 인증 연동 후 해제
+            @RequestHeader("X-USER-ID") Long userId,
+            @PathVariable Long reviewId
+    ) {
+        ReviewEditResponseDto responseDto = reviewService.getReviewForEdit(userId, reviewId);
+        return ResponseCustom.OK(responseDto);
     }
 }
