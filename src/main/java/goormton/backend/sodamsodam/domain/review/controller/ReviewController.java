@@ -55,4 +55,15 @@ public class ReviewController {
         reviewService.updateReview(userId, reviewId, requestDto);
         return ResponseCustom.OK();
     }
+
+    @Operation(summary = "리뷰 삭제",description = "본인이 작성한 리뷰를 삭제합니다.")
+    @DeleteMapping("reviews/{reviewId}")
+    public ResponseCustom<Void> deleteReview(
+            //@AuthenticationPrincipal(expression = "userId") Long userId, TODO: JWT 인증 연동 후 해제
+            @RequestHeader("X-USER-ID") Long userId,
+            @PathVariable Long reviewId
+    ){
+        reviewService.deleteReview(userId, reviewId);
+        return ResponseCustom.OK();
+    }
 }

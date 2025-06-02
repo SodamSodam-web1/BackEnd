@@ -9,6 +9,9 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Getter
 @NoArgsConstructor
@@ -37,6 +40,9 @@ public class Review extends BaseEntity {
     @Enumerated(EnumType.STRING)
     @Column(length = 1)
     private ReviewTag tag3;
+
+    @OneToMany(mappedBy = "review", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Image> images = new ArrayList<>();
 
     public void update(String content, ReviewTag tag1, ReviewTag tag2, ReviewTag tag3) {
         this.content = content;
