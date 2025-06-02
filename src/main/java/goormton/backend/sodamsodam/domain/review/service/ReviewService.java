@@ -6,9 +6,9 @@ import goormton.backend.sodamsodam.domain.review.entity.Review;
 import goormton.backend.sodamsodam.domain.review.enums.ReviewTag;
 import goormton.backend.sodamsodam.domain.review.repository.ImageRepository;
 import goormton.backend.sodamsodam.domain.review.repository.ReviewRepository;
-import goormton.backend.sodamsodam.domain.user.entity.User;
-import goormton.backend.sodamsodam.domain.user.repository.UserRepository;
-import goormton.backend.sodamsodam.global.error.DefaultExeption;
+import goormton.backend.sodamsodam.domain.user.domain.User;
+import goormton.backend.sodamsodam.domain.user.domain.repository.UserRepository;
+import goormton.backend.sodamsodam.global.error.DefaultException;
 import goormton.backend.sodamsodam.global.payload.ErrorCode;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -29,7 +29,7 @@ public class ReviewService {
 
     public ReviewCreateResponseDto createReview(Long userId, String placeId, ReviewCreateRequestDto dto) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new DefaultExeption(ErrorCode.USER_NOT_FOUND_ERROR));
+                .orElseThrow(() -> new DefaultException(ErrorCode.USER_NOT_FOUND_ERROR));
 
         Review review = Review.builder()
                 .user(user)
@@ -58,7 +58,7 @@ public class ReviewService {
         Page<Review> reviewPage = reviewRepository.findAllByPlaceIdWithUser(placeId, pageable);
 
         List<ReviewResponseDto> reviewDtos = reviewPage.map(review -> {
-            String username = review.getUser().getName();
+            String username = review.getUser().getUsername();
             List<String> imageUrls=imageRepository.findUrlsByReviewId(review.getId());
             return ReviewResponseDto.from(review, username, imageUrls);
         }).getContent();
@@ -76,10 +76,10 @@ public class ReviewService {
     @Transactional
     public void updateReview(Long userId, Long reviewId, ReviewUpdateRequestDto dto) {
         Review review = reviewRepository.findById(reviewId)
-                .orElseThrow(() -> new DefaultExeption(ErrorCode.REVIEW_NOT_FOUND_ERROR));
+                .orElseThrow(() -> new DefaultException(ErrorCode.REVIEW_NOT_FOUND_ERROR));
 
         if (!review.getUser().getId().equals(userId)) {
-            throw new DefaultExeption(ErrorCode.FORBIDDEN_REVIEW_UPDATE);
+            throw new DefaultException(ErrorCode.FORBIDDEN_REVIEW_UPDATE);
         }
 
         List<ReviewTag> tags = dto.getTags();
@@ -112,7 +112,7 @@ public class ReviewService {
 
         Set<ReviewTag> tagSet = new HashSet<>(tags);
         if (tagSet.size() != tags.size()) {
-            throw new DefaultExeption(ErrorCode.DUPLICATE_REVIEW_TAGS);
+            throw new DefaultException(ErrorCode.DUPLICATE_REVIEW_TAGS);
         }
     }
 }

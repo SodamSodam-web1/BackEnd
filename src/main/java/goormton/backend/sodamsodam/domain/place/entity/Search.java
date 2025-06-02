@@ -1,6 +1,6 @@
 package goormton.backend.sodamsodam.domain.place.entity;
 
-import goormton.backend.sodamsodam.domain.user.entity.User;
+import goormton.backend.sodamsodam.domain.user.domain.User;
 import jakarta.persistence.*;
 import lombok.Getter;
 

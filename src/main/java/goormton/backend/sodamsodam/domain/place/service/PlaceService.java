@@ -5,7 +5,7 @@ import goormton.backend.sodamsodam.domain.place.dto.PlaceResponseDto;
 import goormton.backend.sodamsodam.domain.place.entity.Search;
 import goormton.backend.sodamsodam.domain.place.repository.SearchRepository;
 import goormton.backend.sodamsodam.domain.place.dto.SearchHistoryDto;
-import goormton.backend.sodamsodam.domain.user.entity.User;
+import goormton.backend.sodamsodam.domain.user.domain.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
