@@ -2,7 +2,7 @@ package goormton.backend.sodamsodam.domain.review.entity;
 
 import goormton.backend.sodamsodam.domain.common.BaseEntity;
 import goormton.backend.sodamsodam.domain.review.enums.ReviewTag;
-import goormton.backend.sodamsodam.domain.user.entity.User;
+import goormton.backend.sodamsodam.domain.user.domain.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
