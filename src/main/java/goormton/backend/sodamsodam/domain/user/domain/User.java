@@ -21,6 +21,10 @@ public class User extends BaseEntity {
     @Column(nullable = false)
     private String password;
 
+    @JoinColumn(name = "nickname")
+    private String name;
+
+    @JoinColumn(name = "profilePicture")
     private String profile_picture;
 
     @Enumerated(EnumType.STRING)
@@ -30,10 +34,11 @@ public class User extends BaseEntity {
     private String providerId;
 
     @Builder(toBuilder = true)
-    User(String username, String email, String password, String profile_picture, UserRole role, String provider, String providerId) {
+    User(String username, String email, String password, String name, String profile_picture, UserRole role, String provider, String providerId) {
         this.username = username;
         this.email = email;
         this.password = password;
+        this.name = name;
         this.profile_picture = profile_picture;
         this.role = role;
         this.provider = provider;
