@@ -1,6 +1,6 @@
 package goormton.backend.sodamsodam.domain.place.service;
 
-import goormton.backend.sodamsodam.domain.place.dto.KakaoApiResponseDto;
+import goormton.backend.sodamsodam.domain.place.dto.KakaoPlaceDto;
 import goormton.backend.sodamsodam.domain.place.dto.PlaceResponseDto;
 import goormton.backend.sodamsodam.domain.place.entity.Search;
 import goormton.backend.sodamsodam.domain.place.repository.SearchRepository;
@@ -33,7 +33,7 @@ public class PlaceService {
     public List<PlaceResponseDto> searchByKeyword(String query, String x, String y, Integer radius) {
         searchRepository.save(new Search(query, null));
         try {
-            KakaoApiResponseDto response = webClient.get()
+            KakaoPlaceDto response = webClient.get()
                     .uri(uriBuilder -> {
                         URI uri = uriBuilder
                                 .path("/v2/local/search/keyword.json")
@@ -47,7 +47,7 @@ public class PlaceService {
                     .header("Authorization", "KakaoAK " + kakaoApiKey)
                     .header("Content-Type", "application/json;charset=UTF-8")
                     .retrieve()
-                    .bodyToMono(KakaoApiResponseDto.class)
+                    .bodyToMono(KakaoPlaceDto.class)
                     .doOnError(error -> log.error("Kakao API Error: {}", error.getMessage()))
                     .block();
 
@@ -73,7 +73,7 @@ public class PlaceService {
             Integer radius) {
         searchRepository.save(new Search(category_group_code, null));
         try {
-            KakaoApiResponseDto response = webClient.get()
+            KakaoPlaceDto response = webClient.get()
                     .uri(uriBuilder -> {
                         URI uri = uriBuilder
                                 .path("/v2/local/search/category.json")
@@ -88,7 +88,7 @@ public class PlaceService {
                     .header("Authorization", "KakaoAK " + kakaoApiKey)
                     .header("Content-Type", "application/json;charset=UTF-8")
                     .retrieve()
-                    .bodyToMono(KakaoApiResponseDto.class)
+                    .bodyToMono(KakaoPlaceDto.class)
                     .doOnError(error -> log.error("Kakao API Error: {}", error.getMessage()))
                     .block();
 

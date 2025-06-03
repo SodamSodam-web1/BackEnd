@@ -1,15 +1,18 @@
 package goormton.backend.sodamsodam.domain.place.dto;
 
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.Data;
 import java.util.List;
 
 @Data
-public class KakaoApiResponseDto {
+public class KakaoPlaceDto {
 
     private Meta meta;
     private List<Document> documents;
 
     @Data
+    @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
     public static class Meta {
         private int total_count;      // 검색된 문서 수
         private int pageable_count;   // total_count 중 노출 가능 문서 수
@@ -17,6 +20,7 @@ public class KakaoApiResponseDto {
     }
 
     @Data
+    @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
     public static class Document {
         private String id;
         private String place_name;         // 장소명

@@ -19,7 +19,7 @@ public class PlaceResponseDto {
     private String addressName;
 
 
-    public static PlaceResponseDto from(KakaoApiResponseDto.Document document) {
+    public static PlaceResponseDto from(KakaoPlaceDto.Document document) {
         return new PlaceResponseDto(
                 document.getPlace_name(),
                 document.getPhone(),
