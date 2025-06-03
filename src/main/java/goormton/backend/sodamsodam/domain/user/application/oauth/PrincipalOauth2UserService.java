@@ -49,12 +49,14 @@ public class PrincipalOauth2UserService extends DefaultOAuth2UserService {
             user = userEntity.get();
             user.toBuilder()
                     .email(oAuth2UserInfo.getEmail())
+                    .name(oAuth2UserInfo.getName())
                     .build();
             userRepository.save(user);
         } else {
             user = User.builder()
                     .username(oAuth2UserInfo.getProvider() + "_" + oAuth2UserInfo.getProviderId())
                     .email(oAuth2UserInfo.getEmail())
+                    .name(oAuth2UserInfo.getName())
                     .provider(oAuth2UserInfo.getProvider())
                     .providerId(oAuth2UserInfo.getProviderId())
                     .role(UserRole.USER)
