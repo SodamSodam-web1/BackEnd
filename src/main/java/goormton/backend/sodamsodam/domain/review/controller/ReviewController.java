@@ -3,6 +3,7 @@ package goormton.backend.sodamsodam.domain.review.controller;
 import goormton.backend.sodamsodam.domain.review.dto.*;
 import goormton.backend.sodamsodam.domain.review.service.ReviewService;
 import goormton.backend.sodamsodam.global.payload.ResponseCustom;
+import goormton.backend.sodamsodam.global.util.jwt.JwtUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -22,15 +23,18 @@ import org.springframework.web.bind.annotation.*;
 
 public class ReviewController {
     private final ReviewService reviewService;
+    private final JwtUtil jwtUtil;
 
     @Operation(summary = "리뷰 작성",description = "특정 장소에 대한 리뷰를 작성합니다.")
     @PostMapping("places/{placeId}/reviews")
     public ResponseCustom<ReviewCreateResponseDto> createReview(
-            //@AuthenticationPrincipal(expression = "userId") Long userId, TODO: JWT 인증 연동 후 해제
-            @RequestHeader("X-USER-ID") Long userId,
+            @RequestHeader("Authorization") String authorizationHeader,
             @PathVariable String placeId,
             @Valid @RequestBody ReviewCreateRequestDto requestDto
     ) {
+        String token = authorizationHeader.replace("Bearer ", "");
+        Long userId = jwtUtil.getIdFromToken(token);
+
         ReviewCreateResponseDto responseDto = reviewService.createReview(userId, placeId, requestDto);
         return ResponseCustom.CREATED(responseDto);
     }
@@ -48,11 +52,13 @@ public class ReviewController {
     @Operation(summary = "리뷰 수정",description = "본인이 작성한 리뷰의 내용을 수정합니다.")
     @PatchMapping("reviews/{reviewId}")
     public ResponseCustom<Void> updateReview(
-            //@AuthenticationPrincipal(expression = "userId") Long userId, TODO: JWT 인증 연동 후 해제
-            @RequestHeader("X-USER-ID") Long userId,
+            @RequestHeader("Authorization") String authorizationHeader,
             @PathVariable Long reviewId,
             @Valid @RequestBody ReviewUpdateRequestDto requestDto
-            ){
+    ){
+        String token = authorizationHeader.replace("Bearer ", "");
+        Long userId = jwtUtil.getIdFromToken(token);
+
         reviewService.updateReview(userId, reviewId, requestDto);
         return ResponseCustom.OK();
     }
@@ -60,10 +66,12 @@ public class ReviewController {
     @Operation(summary = "리뷰 삭제",description = "본인이 작성한 리뷰를 삭제합니다.")
     @DeleteMapping("reviews/{reviewId}")
     public ResponseCustom<Void> deleteReview(
-            //@AuthenticationPrincipal(expression = "userId") Long userId, TODO: JWT 인증 연동 후 해제
-            @RequestHeader("X-USER-ID") Long userId,
+            @RequestHeader("Authorization") String authorizationHeader,
             @PathVariable Long reviewId
     ){
+        String token = authorizationHeader.replace("Bearer ", "");
+        Long userId = jwtUtil.getIdFromToken(token);
+
         reviewService.deleteReview(userId, reviewId);
         return ResponseCustom.OK();
     }
@@ -76,10 +84,12 @@ public class ReviewController {
     })
     @GetMapping("reviews/{reviewId}")
     public ResponseCustom<ReviewEditResponseDto> getReviewForEdit(
-            //@AuthenticationPrincipal(expression = "userId") Long userId, TODO: JWT 인증 연동 후 해제
-            @RequestHeader("X-USER-ID") Long userId,
+            @RequestHeader("Authorization") String authorizationHeader,
             @PathVariable Long reviewId
     ) {
+        String token = authorizationHeader.replace("Bearer ", "");
+        Long userId = jwtUtil.getIdFromToken(token);
+
         ReviewEditResponseDto responseDto = reviewService.getReviewForEdit(userId, reviewId);
         return ResponseCustom.OK(responseDto);
     }
