@@ -2,12 +2,9 @@ package goormton.backend.sodamsodam.domain.bookmark.presentation;
 
 import goormton.backend.sodamsodam.domain.bookmark.application.BookmarkService;
 import goormton.backend.sodamsodam.domain.bookmark.domain.Bookmark;
-import goormton.backend.sodamsodam.domain.user.dto.response.JwtResponse;
 import goormton.backend.sodamsodam.global.payload.ResponseCustom;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/bookmarks")
-public class BookmakrController {
+public class BookmarkController {
 
     private final BookmarkService bookmarkService;
 
