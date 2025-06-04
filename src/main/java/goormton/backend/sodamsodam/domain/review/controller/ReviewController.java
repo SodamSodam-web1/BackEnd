@@ -25,19 +25,19 @@ public class ReviewController {
     private final ReviewService reviewService;
     private final JwtUtil jwtUtil;
 
-    @Operation(summary = "리뷰 작성",description = "특정 장소에 대한 리뷰를 작성합니다.")
-    @PostMapping("places/{placeId}/reviews")
+    @Operation(summary = "리뷰 작성", description = "로그인된 사용자가 특정 장소에 리뷰를 작성합니다.")
+    @PostMapping("/places/{placeId}/reviews")
     public ResponseCustom<ReviewCreateResponseDto> createReview(
-            @RequestHeader("Authorization") String authorizationHeader,
+            @Parameter(description = "AccessToken을 입력해주세요", required = true)
+            @RequestHeader("Authorization") String token,
             @PathVariable String placeId,
             @Valid @RequestBody ReviewCreateRequestDto requestDto
     ) {
-        String token = authorizationHeader.replace("Bearer ", "");
-        Long userId = jwtUtil.getIdFromToken(token);
-
+        Long userId = jwtUtil.getIdFromToken(token.replace("Bearer ", ""));
         ReviewCreateResponseDto responseDto = reviewService.createReview(userId, placeId, requestDto);
         return ResponseCustom.CREATED(responseDto);
     }
+
 
     @Operation(summary = "장소 리뷰 목록 조회",description = "특정 장소에 달린 모든 리뷰를 최신순으로 가져옵니다. ")
     @GetMapping("places/{placeId}/reviews")
@@ -52,12 +52,12 @@ public class ReviewController {
     @Operation(summary = "리뷰 수정",description = "본인이 작성한 리뷰의 내용을 수정합니다.")
     @PatchMapping("reviews/{reviewId}")
     public ResponseCustom<Void> updateReview(
-            @RequestHeader("Authorization") String authorizationHeader,
+            @Parameter(description = "AccessToken을 입력해주세요", required = true)
+            @RequestHeader("Authorization") String token,
             @PathVariable Long reviewId,
             @Valid @RequestBody ReviewUpdateRequestDto requestDto
     ){
-        String token = authorizationHeader.replace("Bearer ", "");
-        Long userId = jwtUtil.getIdFromToken(token);
+        Long userId = jwtUtil.getIdFromToken(token.replace("Bearer ", ""));
 
         reviewService.updateReview(userId, reviewId, requestDto);
         return ResponseCustom.OK();
@@ -66,11 +66,11 @@ public class ReviewController {
     @Operation(summary = "리뷰 삭제",description = "본인이 작성한 리뷰를 삭제합니다.")
     @DeleteMapping("reviews/{reviewId}")
     public ResponseCustom<Void> deleteReview(
-            @RequestHeader("Authorization") String authorizationHeader,
+            @Parameter(description = "AccessToken을 입력해주세요", required = true)
+            @RequestHeader("Authorization") String token,
             @PathVariable Long reviewId
     ){
-        String token = authorizationHeader.replace("Bearer ", "");
-        Long userId = jwtUtil.getIdFromToken(token);
+        Long userId = jwtUtil.getIdFromToken(token.replace("Bearer ", ""));
 
         reviewService.deleteReview(userId, reviewId);
         return ResponseCustom.OK();
@@ -84,11 +84,11 @@ public class ReviewController {
     })
     @GetMapping("reviews/{reviewId}")
     public ResponseCustom<ReviewEditResponseDto> getReviewForEdit(
-            @RequestHeader("Authorization") String authorizationHeader,
+            @Parameter(description = "AccessToken을 입력해주세요", required = true)
+            @RequestHeader("Authorization") String token,
             @PathVariable Long reviewId
     ) {
-        String token = authorizationHeader.replace("Bearer ", "");
-        Long userId = jwtUtil.getIdFromToken(token);
+        Long userId = jwtUtil.getIdFromToken(token.replace("Bearer ", ""));
 
         ReviewEditResponseDto responseDto = reviewService.getReviewForEdit(userId, reviewId);
         return ResponseCustom.OK(responseDto);
