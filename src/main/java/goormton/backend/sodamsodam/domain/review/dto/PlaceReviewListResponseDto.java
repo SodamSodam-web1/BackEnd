@@ -18,7 +18,7 @@ public class PlaceReviewListResponseDto {
     private String placeId;
 
     @Schema(description = "리뷰 응답 리스트")
-    private List<ReviewResponseDto> reviews;
+    private List<PlaceReviewDto> reviews;
 
     @Schema(description = "다음 페이지 존재 여부", example = "true")
     private boolean hasNext;
