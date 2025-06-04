@@ -93,4 +93,22 @@ public class ReviewController {
         ReviewEditResponseDto responseDto = reviewService.getReviewForEdit(userId, reviewId);
         return ResponseCustom.OK(responseDto);
     }
+
+    @Operation(summary = "내 리뷰 목록 조회",description = "로그인한 사용자가 작성한 리뷰 목록을 최신순으로 조회합니다. ")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "내 리뷰 목록 조회 성공"),
+            @ApiResponse(responseCode = "401", description = "인증 실패"),
+            @ApiResponse(responseCode = "500", description = "서버 오류")
+    })
+    @GetMapping("my/reviews")
+    public ResponseCustom<MyReviewListResponseDto> getMyReviews(
+            @Parameter(description = "AccessToken을 입력해주세요", required = true)
+            @RequestHeader("Authorization") String token,
+            @Parameter(hidden = true) @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable
+    ) {
+        Long userId = jwtUtil.getIdFromToken(token.replace("Bearer ", ""));
+
+        MyReviewListResponseDto responseDto = reviewService.getMyReviews(userId, pageable);
+        return ResponseCustom.OK(responseDto);
+    }
 }
