@@ -50,7 +50,7 @@ public class JwtUtil {
 
 //    jwt로부터 정보 추출
     public Long getIdFromToken(String token) {
-        return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("id", Long.class);
+        return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("userId", Long.class);
     }
 
     public String getUsernameFromToken(String token) {
