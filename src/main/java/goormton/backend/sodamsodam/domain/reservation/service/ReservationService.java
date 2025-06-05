@@ -1,0 +1,56 @@
+package goormton.backend.sodamsodam.domain.reservation.service;
+
+import goormton.backend.sodamsodam.domain.reservation.domain.Reservation;
+import goormton.backend.sodamsodam.domain.reservation.dto.request.CreateReservationRequest;
+import goormton.backend.sodamsodam.domain.reservation.dto.response.CreateReservationResponse;
+import goormton.backend.sodamsodam.domain.reservation.repository.ReservationRepository;
+import goormton.backend.sodamsodam.domain.user.domain.User;
+import goormton.backend.sodamsodam.domain.user.domain.repository.UserRepository;
+import goormton.backend.sodamsodam.global.error.DefaultAuthenticationException;
+import goormton.backend.sodamsodam.global.error.DefaultException;
+import goormton.backend.sodamsodam.global.payload.ErrorCode;
+import goormton.backend.sodamsodam.global.util.jwt.JwtUtil;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+
+@RequiredArgsConstructor
+@Service
+public class ReservationService {
+
+    private final ReservationRepository reservationRepository;
+    private final UserRepository userRepository;
+    private final JwtUtil jwtUtil;
+
+    /**
+     * 예약 생성 메서드
+     * @param authHeader
+     * @param createReservationRequest
+     * @return 생성된 예약 정보 (reservationId, reservationDate, reservationTime)
+     */
+    public CreateReservationResponse createReservation(String authHeader, CreateReservationRequest createReservationRequest) {
+        String token = authHeader.startsWith("Bearer ") ? authHeader.substring(7).trim() : authHeader; // Todo JWT 로직에 추가 요청
+
+        if (!jwtUtil.validateToken(token)) {
+            throw new DefaultAuthenticationException(ErrorCode.JWT_EXPIRED_ERROR);
+        }
+
+        Long userId = jwtUtil.getIdFromToken(token);
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new DefaultException(ErrorCode.USER_NOT_FOUND_ERROR));
+
+        Reservation reservation = Reservation.builder()
+                .user(user)
+                .placeId(createReservationRequest.placeId())
+                .reservationDate(createReservationRequest.reservationDate())
+                .reservationTime(createReservationRequest.reservationTime())
+                .build();
+
+        reservationRepository.save(reservation);
+
+        return new CreateReservationResponse(
+                reservation.getId(),
+                reservation.getReservationDate(),
+                reservation.getReservationTime()
+        );
+    }
+}
