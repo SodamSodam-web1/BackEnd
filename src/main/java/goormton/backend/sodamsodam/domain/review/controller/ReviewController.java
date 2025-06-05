@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/")
+@RequestMapping("/api")
 @Tag(name = "리뷰", description = "리뷰 관련 API")
 
 public class ReviewController {
@@ -40,7 +40,7 @@ public class ReviewController {
 
 
     @Operation(summary = "장소 리뷰 목록 조회",description = "특정 장소에 달린 모든 리뷰를 최신순으로 가져옵니다. ")
-    @GetMapping("places/{placeId}/reviews")
+    @GetMapping("/places/{placeId}/reviews")
     public ResponseCustom<PlaceReviewListResponseDto> getPlaceReviews(
             @PathVariable String placeId,
             @Parameter(hidden = true) @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable
@@ -50,7 +50,7 @@ public class ReviewController {
     }
 
     @Operation(summary = "리뷰 수정",description = "본인이 작성한 리뷰의 내용을 수정합니다.")
-    @PatchMapping("reviews/{reviewId}")
+    @PatchMapping("/reviews/{reviewId}")
     public ResponseCustom<Void> updateReview(
             @Parameter(description = "AccessToken을 입력해주세요", required = true)
             @RequestHeader("Authorization") String token,
@@ -64,7 +64,7 @@ public class ReviewController {
     }
 
     @Operation(summary = "리뷰 삭제",description = "본인이 작성한 리뷰를 삭제합니다.")
-    @DeleteMapping("reviews/{reviewId}")
+    @DeleteMapping("/reviews/{reviewId}")
     public ResponseCustom<Void> deleteReview(
             @Parameter(description = "AccessToken을 입력해주세요", required = true)
             @RequestHeader("Authorization") String token,
@@ -82,7 +82,7 @@ public class ReviewController {
             @ApiResponse(responseCode = "403", description = "본인이 작성한 리뷰가 아님"),
             @ApiResponse(responseCode = "404", description = "리뷰를 찾을 수 없음")
     })
-    @GetMapping("reviews/{reviewId}")
+    @GetMapping("/reviews/{reviewId}")
     public ResponseCustom<ReviewEditResponseDto> getReviewForEdit(
             @Parameter(description = "AccessToken을 입력해주세요", required = true)
             @RequestHeader("Authorization") String token,
