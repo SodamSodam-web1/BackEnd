@@ -100,7 +100,7 @@ public class ReviewController {
             @ApiResponse(responseCode = "401", description = "인증 실패"),
             @ApiResponse(responseCode = "500", description = "서버 오류")
     })
-    @GetMapping("my/reviews")
+    @GetMapping("/my/reviews")
     public ResponseCustom<MyReviewListResponseDto> getMyReviews(
             @Parameter(description = "AccessToken을 입력해주세요", required = true)
             @RequestHeader("Authorization") String token,
