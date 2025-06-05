@@ -51,6 +51,9 @@ dependencies {
 
 	// WebFlux
 	implementation 'org.springframework.boot:spring-boot-starter-webflux'
+
+	// Spring Cloud AWS Starter
+	implementation 'io.awspring.cloud:spring-cloud-starter-aws:3.3.1'
 }
 
 tasks.named('test') {
