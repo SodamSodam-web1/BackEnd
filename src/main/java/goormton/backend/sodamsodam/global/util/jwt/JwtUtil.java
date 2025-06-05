@@ -1,8 +1,12 @@
 package goormton.backend.sodamsodam.global.util.jwt;
 
+import goormton.backend.sodamsodam.global.error.DefaultException;
+import goormton.backend.sodamsodam.global.payload.ErrorCode;
 import io.jsonwebtoken.Jwts;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
@@ -46,6 +50,15 @@ public class JwtUtil {
                 .expiration(new Date(System.currentTimeMillis() + refreshTokenExpirationInMs))
                 .signWith(secretKey)
                 .compact();
+    }
+
+    // token 추출
+    public String getJwt(HttpServletRequest request) {
+        String bearerToken = request.getHeader("Authorization");
+        if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
+            return bearerToken.substring(7);
+        }
+        throw new DefaultException(ErrorCode.INVALID_PARAMETER, "Authorization header is missing");
     }
 
 //    jwt로부터 정보 추출
