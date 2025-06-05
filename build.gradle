@@ -52,8 +52,8 @@ dependencies {
 	// WebFlux
 	implementation 'org.springframework.boot:spring-boot-starter-webflux'
 
-	// Spring Cloud AWS Starter
-	implementation 'io.awspring.cloud:spring-cloud-starter-aws:3.3.1'
+	// AWS S3 클라이언트 사용을 위한 SDK
+	implementation 'com.amazonaws:aws-java-sdk-s3:1.12.782'
 }
 
 tasks.named('test') {
