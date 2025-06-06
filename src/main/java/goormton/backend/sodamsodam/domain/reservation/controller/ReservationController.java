@@ -4,6 +4,7 @@ import goormton.backend.sodamsodam.domain.reservation.dto.request.CreateReservat
 import goormton.backend.sodamsodam.domain.reservation.dto.response.CreateReservationResponse;
 import goormton.backend.sodamsodam.domain.reservation.service.ReservationService;
 import goormton.backend.sodamsodam.global.payload.ResponseCustom;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -17,10 +18,10 @@ public class ReservationController {
 
     @PostMapping
     public ResponseCustom<CreateReservationResponse> createReservation(
-            @RequestHeader("Authorization") String authHeader,
+            HttpServletRequest request,
             @RequestBody @Valid CreateReservationRequest createReservationRequest
     ) {
-        CreateReservationResponse createReservationResponse = reservationService.createReservation(authHeader, createReservationRequest);
+        CreateReservationResponse createReservationResponse = reservationService.createReservation(request, createReservationRequest);
         return ResponseCustom.CREATED(createReservationResponse);
     }
 }

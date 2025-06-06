@@ -10,6 +10,7 @@ import goormton.backend.sodamsodam.global.error.DefaultAuthenticationException;
 import goormton.backend.sodamsodam.global.error.DefaultException;
 import goormton.backend.sodamsodam.global.payload.ErrorCode;
 import goormton.backend.sodamsodam.global.util.jwt.JwtUtil;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -23,12 +24,12 @@ public class ReservationService {
 
     /**
      * 예약 생성 메서드
-     * @param authHeader
+     * @param request
      * @param createReservationRequest
      * @return 생성된 예약 정보 (reservationId, reservationDate, reservationTime)
      */
-    public CreateReservationResponse createReservation(String authHeader, CreateReservationRequest createReservationRequest) {
-        String token = authHeader.startsWith("Bearer ") ? authHeader.substring(7).trim() : authHeader; // Todo JWT 로직에 추가 요청
+    public CreateReservationResponse createReservation(HttpServletRequest request, CreateReservationRequest createReservationRequest) {
+        String token = jwtUtil.getJwt(request);
 
         if (!jwtUtil.validateToken(token)) {
             throw new DefaultAuthenticationException(ErrorCode.JWT_EXPIRED_ERROR);
