@@ -3,6 +3,9 @@ package goormton.backend.sodamsodam.domain.place.controller;
 import goormton.backend.sodamsodam.domain.place.dto.PlaceResponseDto;
 import goormton.backend.sodamsodam.domain.place.dto.SearchHistoryDto;
 import goormton.backend.sodamsodam.domain.place.service.PlaceService;
+import goormton.backend.sodamsodam.domain.user.domain.UserPrincipal;
+import goormton.backend.sodamsodam.global.error.DefaultException;
+import goormton.backend.sodamsodam.global.payload.ErrorCode;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -13,6 +16,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -40,8 +45,8 @@ public class PlaceController {
                     "특정 지역을 중심으로 검색할 경우 radius와 함께 사용 가능") @RequestParam(required = false) String y,
             @Parameter(description = "중심 좌표부터의 반경거리. 특정 지역을 중심으로 검색하려고 할 경우 중심좌표로 쓰일 x,y와 함께 사용\n" +
                     "(단위: 미터(m), 최소: 0, 최대: 20000)") @RequestParam(required = false) Integer radius) {
-
-        List<PlaceResponseDto> places = placeService.searchByKeyword(query, x, y, radius);
+        UserPrincipal userPrincipal = (UserPrincipal) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        List<PlaceResponseDto> places = placeService.searchByKeyword(query, x, y, radius, userPrincipal.getUser());
         return ResponseEntity.ok(places);
     }
 
@@ -59,8 +64,8 @@ public class PlaceController {
                     "특정 지역을 중심으로 검색하려고 할 경우 radius와 함께 사용 가능.") @RequestParam(required = false) String y,
             @Parameter(description = "중심 좌표부터의 반경거리. 특정 지역을 중심으로 검색하려고 할 경우 중심좌표로 쓰일 x,y와 함께 사용\n" +
                     "(단위: 미터(m), 최소: 0, 최대: 20000)") @RequestParam(required = false) Integer radius) {
-
-        List<PlaceResponseDto> places = placeService.searchByCategory(category_group_code, x, y, radius);
+        UserPrincipal userPrincipal = (UserPrincipal) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        List<PlaceResponseDto> places = placeService.searchByCategory(category_group_code, x, y, radius, userPrincipal.getUser());
         return ResponseEntity.ok(places);
     }
 
@@ -71,9 +76,13 @@ public class PlaceController {
     })
     @GetMapping("/search-histories")
     public ResponseEntity<List<SearchHistoryDto>> getSearchHistories() {
-        // TODO: 로그인한 사용자 정보를 받아와서 user 변수에 할당
-        // 예시: @AuthenticationPrincipal User user
-        // User user = ...;
-        return ResponseEntity.ok(placeService.getSearchHistories(null));
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated() || 
+            authentication.getPrincipal() instanceof String) {
+            throw new DefaultException(ErrorCode.INVALID_AUTHENTICATION);
+        }
+        
+        UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
+        return ResponseEntity.ok(placeService.getSearchHistories(userPrincipal.getUser()));
     }
 }

@@ -30,8 +30,8 @@ public class PlaceService {
 
     private final SearchRepository searchRepository;
 
-    public List<PlaceResponseDto> searchByKeyword(String query, String x, String y, Integer radius) {
-        searchRepository.save(new Search(query, null));
+    public List<PlaceResponseDto> searchByKeyword(String query, String x, String y, Integer radius, User user) {
+        searchRepository.save(new Search(query, user));
         try {
             KakaoPlaceDto response = webClient.get()
                     .uri(uriBuilder -> {
@@ -70,8 +70,9 @@ public class PlaceService {
             String category_group_code,
             String x,
             String y,
-            Integer radius) {
-        searchRepository.save(new Search(category_group_code, null));
+            Integer radius,
+            User user) {
+        searchRepository.save(new Search(category_group_code, user));
         try {
             KakaoPlaceDto response = webClient.get()
                     .uri(uriBuilder -> {
