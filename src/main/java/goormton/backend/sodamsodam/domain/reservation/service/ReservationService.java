@@ -13,6 +13,7 @@ import goormton.backend.sodamsodam.global.util.jwt.JwtUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @RequiredArgsConstructor
 @Service
@@ -28,6 +29,7 @@ public class ReservationService {
      * @param createReservationRequest
      * @return 생성된 예약 정보 (reservationId, reservationDate, reservationTime)
      */
+    @Transactional
     public CreateReservationResponse createReservation(HttpServletRequest request, CreateReservationRequest createReservationRequest) {
         String token = jwtUtil.getJwt(request);
 
