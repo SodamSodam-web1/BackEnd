@@ -4,16 +4,16 @@ import goormton.backend.sodamsodam.global.payload.ErrorCode;
 import lombok.Getter;
 
 @Getter
-public class DefaultExeption extends RuntimeException {
+public class DefaultException extends RuntimeException {
 
     private ErrorCode errorCode;
 
-    public DefaultExeption(ErrorCode errorCode) {
+    public DefaultException(ErrorCode errorCode) {
         super(errorCode.getMessage());
         this.errorCode = errorCode;
     }
 
-    public DefaultExeption(ErrorCode errorCode, String message) {
+    public DefaultException(ErrorCode errorCode, String message) {
         super(message);
         this.errorCode = errorCode;
     }

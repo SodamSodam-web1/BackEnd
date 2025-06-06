@@ -8,7 +8,7 @@ import org.springframework.validation.FieldError;
 import java.util.List;
 
 @Getter
-public class InvalidParameterException extends DefaultExeption{
+public class InvalidParameterException extends DefaultException{
 
     private Errors errors;
 

@@ -20,8 +20,18 @@ public enum ErrorCode {
     USER_ALREADY_EXISTS_ERROR(HttpStatus.CONFLICT,null,"는 이미 존재하는 회원입니다"),
     INACTIVE_USER_ERROR(HttpStatus.FORBIDDEN,null,"권한이 없는 사용자입니다"),
 
+    //Review Error
+    REVIEW_NOT_FOUND_ERROR(HttpStatus.NOT_FOUND, null , "리뷰를 찾을 수 없습니다."),
+    FORBIDDEN_REVIEW_UPDATE(HttpStatus.FORBIDDEN, null, "본인의 리뷰만 수정할 수 있습니다."),
+    DUPLICATE_REVIEW_TAGS(HttpStatus.BAD_REQUEST, null , "리뷰 태그에 중복된 항목이 존재합니다."),
+    FORBIDDEN_REVIEW_DELETE(HttpStatus.FORBIDDEN, null, "본인의 리뷰만 삭제할 수 있습니다."),
+
+    // Bookmark Error
+    BOOKMARK_ALREADY_EXISTS_ERROR(HttpStatus.CONFLICT, null, "이미 북마크된 장소입니다."),
+    BOOKMARK_NOT_FOUND_ERROR(HttpStatus.NOT_FOUND, null , "해당 장소를 북마크하지 않았습니다."),
+
     // JWT 토큰
-    JWT_EXPIRED_ERROR(HttpStatus.BAD_REQUEST, null, "JWT 토큰이 만료되었습니다.")
+    JWT_EXPIRED_ERROR(HttpStatus.BAD_REQUEST, null, "JWT 토큰이 만료되었습니다."),
     ;
 
     private final HttpStatus httpStatus;
