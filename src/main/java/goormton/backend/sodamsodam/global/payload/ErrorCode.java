@@ -30,6 +30,9 @@ public enum ErrorCode {
     BOOKMARK_ALREADY_EXISTS_ERROR(HttpStatus.CONFLICT, null, "이미 북마크된 장소입니다."),
     BOOKMARK_NOT_FOUND_ERROR(HttpStatus.NOT_FOUND, null , "해당 장소를 북마크하지 않았습니다."),
 
+    // Reservation Error
+    RESERVATION_ALREADY_EXISTS_ERROR(HttpStatus.CONFLICT, null, "이미 예약이 찬 시간입니다."),
+
     // JWT 토큰
     JWT_EXPIRED_ERROR(HttpStatus.BAD_REQUEST, null, "JWT 토큰이 만료되었습니다."),
     ;

@@ -39,6 +39,16 @@ public class ReservationService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new DefaultException(ErrorCode.USER_NOT_FOUND_ERROR));
 
+        boolean existsReservation = reservationRepository.existsByPlaceIdAndReservationDateAndReservationTime(
+                createReservationRequest.placeId(),
+                createReservationRequest.reservationDate(),
+                createReservationRequest.reservationTime()
+        );
+
+        if (existsReservation) {
+            throw new DefaultAuthenticationException(ErrorCode.RESERVATION_ALREADY_EXISTS_ERROR);
+        }
+
         Reservation reservation = Reservation.builder()
                 .user(user)
                 .placeId(createReservationRequest.placeId())
