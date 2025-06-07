@@ -31,6 +31,7 @@ public enum ErrorCode {
     BOOKMARK_NOT_FOUND_ERROR(HttpStatus.NOT_FOUND, null , "해당 장소를 북마크하지 않았습니다."),
 
     // Reservation Error
+    RESERVATION_ALREADY_EXISTS_ERROR(HttpStatus.CONFLICT, null, "이미 예약이 찼습니다."),
     RESERVATION_NOT_FOUND(HttpStatus.NOT_FOUND, null, "존재하지 않는 예약입니다."),
     FORBIDDEN_RESERVATION_DELETE(HttpStatus.FORBIDDEN, null, "본인의 예약만 취소할 수 있습니다."),
 
