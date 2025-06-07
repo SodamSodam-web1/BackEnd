@@ -71,7 +71,20 @@ public class BookmarkServiceImpl implements BookmarkService {
 
         // DB에서 사용자가 가진 북마크 엔티티들 조회
         List<BookmarkedPlaceResponse> bookmarks = bookmarkRepository.findAllByUser(user).stream()
-                .map(BookmarkedPlaceResponse::fromEntity)
+                .map(b -> {
+                    // placeId 별 review의 최근 사진 3개 조회
+                    List<String> urls = imageRepository.findTop3UrlsByPlaceId(b.getPlaceId());
+
+                    // dto return
+                    return BookmarkedPlaceResponse.builder()
+                            .placeId(b.getPlaceId())
+                            .placeName(b.getPlaceName())
+                            .addressName(b.getAddressName())
+                            .phone(b.getPhone())
+                            .imageUrls(urls)
+                            .bookmarkedAt(b.getCreatedAt())
+                            .build();
+                })
                 .toList();
         if (bookmarks.isEmpty()) {
             return Collections.emptyList();
