@@ -24,4 +24,13 @@ public class ReservationController {
         CreateReservationResponse createReservationResponse = reservationService.createReservation(request, createReservationRequest);
         return ResponseCustom.CREATED(createReservationResponse);
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseCustom<?> deleteReservation(
+            HttpServletRequest request,
+            @PathVariable("id") Long reservationId
+    ) {
+        reservationService.deleteReservation(request, reservationId);
+        return ResponseCustom.OK();
+    }
 }
