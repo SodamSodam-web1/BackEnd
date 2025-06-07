@@ -44,14 +44,14 @@ public class ReviewService {
 
         reviewRepository.save(review);
 
-        if (dto.getImageUrls() != null && !dto.getImageUrls().isEmpty()) {
-            List<Image> images = dto.getImageUrls().stream()
-                    .map(url -> Image.builder()
-                            .originalFileName(url.substring(url.lastIndexOf("/") + 1))
-                            .storedFileName(url.substring(url.lastIndexOf("/") + 1))
-                            .fileUrl(url)
-                            .filePath(url)
-                            .fileType(url.substring(url.lastIndexOf(".") + 1))
+        if (dto.getImages() != null && !dto.getImages().isEmpty()) {
+            List<Image> images = dto.getImages().stream()
+                    .map(imageDto -> Image.builder()
+                            .originalFileName(imageDto.getOriginalFileName())
+                            .storedFileName(imageDto.getStoredFileName())
+                            .fileUrl(imageDto.getFileUrl())
+                            .filePath(imageDto.getFileUrl())
+                            .fileType(imageDto.getFileUrl().substring(imageDto.getFileUrl().lastIndexOf(".") + 1))
                             .fileSize(0L)
                             .review(review)
                             .build())
@@ -69,10 +69,13 @@ public class ReviewService {
 
         List<ReviewResponseDto> reviewDtos = reviewPage.map(review -> {
             String username = review.getUser().getUsername();
-            List<String> imageUrls = review.getImages().stream()
-                    .map(Image::getFileUrl)
-                    .toList();
-            return ReviewResponseDto.from(review, username, imageUrls);
+            List<ImageInfoDto> images = review.getImages().stream()
+                .map(image -> new ImageInfoDto(
+                    image.getOriginalFileName(),
+                    image.getStoredFileName(),
+                    image.getFileUrl()
+                )).toList();
+            return ReviewResponseDto.from(review, username, images);
         }).getContent();
 
         long totalCount = reviewPage.getTotalElements();
@@ -105,16 +108,16 @@ public class ReviewService {
 
         review.update(dto.getContent(), tag1, tag2, tag3);
 
-        if (dto.getImageUrls() != null) {
+        if (dto.getImages() != null) {
             imageRepository.deleteAllByReview(review);
 
-            List<Image> newImages = dto.getImageUrls().stream()
-                    .map(url -> Image.builder()
-                            .originalFileName(url.substring(url.lastIndexOf("/") + 1))
-                            .storedFileName(url.substring(url.lastIndexOf("/") + 1))
-                            .fileUrl(url)
-                            .filePath(url)
-                            .fileType(url.substring(url.lastIndexOf(".") + 1))
+            List<Image> newImages = dto.getImages().stream()
+                    .map(imageDto -> Image.builder()
+                            .originalFileName(imageDto.getOriginalFileName())
+                            .storedFileName(imageDto.getStoredFileName())
+                            .fileUrl(imageDto.getFileUrl())
+                            .filePath(imageDto.getFileUrl())
+                            .fileType(imageDto.getFileUrl().substring(imageDto.getFileUrl().lastIndexOf(".") + 1))
                             .fileSize(0L)
                             .review(review)
                             .build())
@@ -155,9 +158,12 @@ public class ReviewService {
             throw new DefaultException(ErrorCode.FORBIDDEN_REVIEW_UPDATE);
         }
 
-        List<String> imageUrls = review.getImages().stream()
-                .map(Image::getFileUrl)
-                .toList();
+        List<ImageInfoDto> images = review.getImages().stream()
+            .map(image -> new ImageInfoDto(
+                image.getOriginalFileName(),
+                image.getStoredFileName(),
+                image.getFileUrl()
+            )).toList();
 
         List<ReviewTag> tags = new ArrayList<>();
         if (review.getTag1() != null) tags.add(review.getTag1());
@@ -167,7 +173,7 @@ public class ReviewService {
         return ReviewEditResponseDto.builder()
                 .content(review.getContent())
                 .tags(tags)
-                .imageUrls(imageUrls)
+                .images(images)
                 .build();
     }
 }

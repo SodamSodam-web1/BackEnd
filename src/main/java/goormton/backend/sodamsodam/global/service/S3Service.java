@@ -4,6 +4,8 @@ import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import goormton.backend.sodamsodam.global.payload.ErrorCode;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -31,9 +33,10 @@ public class S3Service {
             "image/gif"
     );
 
-    public String uploadFile(MultipartFile file) {
+    public S3UploadResult uploadFile(MultipartFile file) {
         validateImageFormat(file);
-        String fileName = createFileName(file.getOriginalFilename());
+        String originalFileName = file.getOriginalFilename();
+        String storedFileName = createFileName(originalFileName);
         ObjectMetadata metadata = new ObjectMetadata();
         metadata.setContentType(file.getContentType());
         metadata.setContentLength(file.getSize());
@@ -41,7 +44,7 @@ public class S3Service {
         try {
             amazonS3Client.putObject(new PutObjectRequest(
                     bucket,
-                    fileName,
+                    storedFileName,
                     file.getInputStream(),
                     metadata
             ));
@@ -49,7 +52,8 @@ public class S3Service {
             throw new RuntimeException(ErrorCode.INTERNAL_SERVER_ERROR.getMessage());
         }
 
-        return amazonS3Client.getUrl(bucket, fileName).toString();
+        String fileUrl = amazonS3Client.getUrl(bucket, storedFileName).toString();
+        return new S3UploadResult(originalFileName, storedFileName, fileUrl);
     }
 
     private void validateImageFormat(MultipartFile file) {
@@ -69,5 +73,13 @@ public class S3Service {
 
     private String getFileExtension(String fileName) {
         return fileName.substring(fileName.lastIndexOf("."));
+    }
+
+    @Getter
+    @AllArgsConstructor
+    public static class S3UploadResult {
+        private String originalFileName;
+        private String storedFileName;
+        private String fileUrl;
     }
 } 

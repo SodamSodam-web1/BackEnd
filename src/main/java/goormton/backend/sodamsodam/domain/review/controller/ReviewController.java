@@ -19,6 +19,8 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api")
@@ -31,14 +33,16 @@ public class ReviewController {
 
     @Operation(summary = "리뷰 이미지 업로드", description = "리뷰에 첨부할 이미지를 업로드합니다.")
     @PostMapping(value = "/upload/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseCustom<String> uploadReviewImage(
+    public ResponseCustom<List<S3Service.S3UploadResult>> uploadReviewImage(
             @Parameter(description = "AccessToken을 입력해주세요", required = true)
             @RequestHeader("Authorization") String token,
             @Parameter(description = "이미지 파일", required = true)
-            @RequestParam("file") MultipartFile file
+            @RequestParam("file") List<MultipartFile> files
     ) {
-        String imageUrl = s3Service.uploadFile(file);
-        return ResponseCustom.OK(imageUrl);
+        List<S3Service.S3UploadResult> results = files.stream()
+                .map(s3Service::uploadFile)
+                .toList();
+        return ResponseCustom.OK(results);
     }
 
     @Operation(summary = "리뷰 작성", description = "로그인된 사용자가 특정 장소에 리뷰를 작성합니다.")
