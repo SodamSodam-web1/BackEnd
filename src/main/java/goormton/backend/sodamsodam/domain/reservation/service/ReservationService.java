@@ -61,10 +61,10 @@ public class ReservationService {
      * 예약 취소 메서드
      * 흐름: 헤더에서 토큰 추출 → 토큰 검증 → 삭제 요청 들어온 예약 존재 여부 검증 → 삭제 요청한 사용자와 예약한 사용자 일치 여부 검증
      * @param request
-     * @param id
+     * @param reservationId
      */
     @Transactional
-    public void deleteReservation(HttpServletRequest request, Long id) {
+    public void deleteReservation(HttpServletRequest request, Long reservationId) {
         String token = jwtUtil.getJwt(request);
 
         // Todo JWT 관련 로직 분리 필요
@@ -72,7 +72,7 @@ public class ReservationService {
             throw new DefaultAuthenticationException(ErrorCode.JWT_EXPIRED_ERROR);
         }
 
-        Reservation reservation = reservationRepository.findById(id)
+        Reservation reservation = reservationRepository.findById(reservationId)
                 .orElseThrow(() -> new DefaultException(ErrorCode.RESERVATION_NOT_FOUND));
 
         Long userId = jwtUtil.getIdFromToken(token);
@@ -80,6 +80,6 @@ public class ReservationService {
             throw new DefaultException(ErrorCode.FORBIDDEN_RESERVATION_DELETE);
         }
 
-        reservationRepository.deleteById(id);
+        reservationRepository.deleteById(reservationId);
     }
 }
