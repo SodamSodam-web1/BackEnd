@@ -4,6 +4,7 @@ import goormton.backend.sodamsodam.domain.bookmark.domain.Bookmark;
 import goormton.backend.sodamsodam.domain.bookmark.domain.repository.BookmarkRepository;
 import goormton.backend.sodamsodam.domain.bookmark.dto.request.BookmarkedPlaceRequest;
 import goormton.backend.sodamsodam.domain.bookmark.dto.response.BookmarkedPlaceResponse;
+import goormton.backend.sodamsodam.domain.review.repository.ImageRepository;
 import goormton.backend.sodamsodam.domain.user.domain.User;
 import goormton.backend.sodamsodam.domain.user.domain.repository.UserRepository;
 import goormton.backend.sodamsodam.global.error.DefaultException;
@@ -26,6 +27,7 @@ public class BookmarkServiceImpl implements BookmarkService {
 
     private final BookmarkRepository bookmarkRepository;
     private final UserRepository userRepository;
+    private final ImageRepository imageRepository;
     private final JwtUtil jwtUtil;
 
     @Transactional
