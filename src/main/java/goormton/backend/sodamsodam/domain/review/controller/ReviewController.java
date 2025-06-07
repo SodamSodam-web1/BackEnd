@@ -77,11 +77,6 @@ public class ReviewController {
     }
 
     @Operation(summary = "본인 리뷰 단건 조회", description = "리뷰 수정 전, 본인이 작성한 리뷰의 내용을 불러옵니다.")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "리뷰 조회 성공"),
-            @ApiResponse(responseCode = "403", description = "본인이 작성한 리뷰가 아님"),
-            @ApiResponse(responseCode = "404", description = "리뷰를 찾을 수 없음")
-    })
     @GetMapping("/reviews/{reviewId}")
     public ResponseCustom<ReviewEditResponseDto> getReviewForEdit(
             @Parameter(description = "AccessToken을 입력해주세요", required = true)
@@ -97,8 +92,6 @@ public class ReviewController {
     @Operation(summary = "내 리뷰 목록 조회",description = "로그인한 사용자가 작성한 리뷰 목록을 최신순으로 조회합니다. ")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "내 리뷰 목록 조회 성공"),
-            @ApiResponse(responseCode = "401", description = "인증 실패"),
-            @ApiResponse(responseCode = "500", description = "서버 오류")
     })
     @GetMapping("/my/reviews")
     public ResponseCustom<MyReviewListResponseDto> getMyReviews(
