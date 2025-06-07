@@ -28,6 +28,7 @@ public class ReviewService {
     final private UserRepository userRepository;
     final private ImageRepository imageRepository;
 
+    @Transactional
     public ReviewCreateResponseDto createReview(Long userId, String placeId, ReviewCreateRequestDto dto) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new DefaultException(ErrorCode.USER_NOT_FOUND_ERROR));
@@ -43,13 +44,21 @@ public class ReviewService {
 
         reviewRepository.save(review);
 
-        List<Image> images= dto.getImageUrls().stream()
-                        .map(url->Image.builder()
-                                .url(url)
-                                .review(review)
-                                .build()).toList();
+        if (dto.getImageUrls() != null && !dto.getImageUrls().isEmpty()) {
+            List<Image> images = dto.getImageUrls().stream()
+                    .map(url -> Image.builder()
+                            .originalFileName(url.substring(url.lastIndexOf("/") + 1))
+                            .storedFileName(url.substring(url.lastIndexOf("/") + 1))
+                            .fileUrl(url)
+                            .filePath(url)
+                            .fileType(url.substring(url.lastIndexOf(".") + 1))
+                            .fileSize(0L)
+                            .review(review)
+                            .build())
+                    .toList();
 
-        imageRepository.saveAll(images);
+            imageRepository.saveAll(images);
+        }
 
         return new ReviewCreateResponseDto(review.getId());
     }
@@ -60,7 +69,9 @@ public class ReviewService {
 
         List<ReviewResponseDto> reviewDtos = reviewPage.map(review -> {
             String username = review.getUser().getUsername();
-            List<String> imageUrls=imageRepository.findUrlsByReviewId(review.getId());
+            List<String> imageUrls = review.getImages().stream()
+                    .map(Image::getFileUrl)
+                    .toList();
             return ReviewResponseDto.from(review, username, imageUrls);
         }).getContent();
 
@@ -99,7 +110,12 @@ public class ReviewService {
 
             List<Image> newImages = dto.getImageUrls().stream()
                     .map(url -> Image.builder()
-                            .url(url)
+                            .originalFileName(url.substring(url.lastIndexOf("/") + 1))
+                            .storedFileName(url.substring(url.lastIndexOf("/") + 1))
+                            .fileUrl(url)
+                            .filePath(url)
+                            .fileType(url.substring(url.lastIndexOf(".") + 1))
+                            .fileSize(0L)
                             .review(review)
                             .build())
                     .toList();
@@ -117,7 +133,7 @@ public class ReviewService {
             throw new DefaultException(ErrorCode.FORBIDDEN_REVIEW_DELETE);
         }
 
-        imageRepository.deleteAllByReview(review);
+        // CascadeType.ALL과 orphanRemoval = true로 인해 이미지는 자동으로 삭제됨
         reviewRepository.delete(review);
     }
 
@@ -139,7 +155,9 @@ public class ReviewService {
             throw new DefaultException(ErrorCode.FORBIDDEN_REVIEW_UPDATE);
         }
 
-        List<String> imageUrls = imageRepository.findUrlsByReviewId(reviewId);
+        List<String> imageUrls = review.getImages().stream()
+                .map(Image::getFileUrl)
+                .toList();
 
         List<ReviewTag> tags = new ArrayList<>();
         if (review.getTag1() != null) tags.add(review.getTag1());
