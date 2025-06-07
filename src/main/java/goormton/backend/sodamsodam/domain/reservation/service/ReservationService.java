@@ -29,6 +29,7 @@ public class ReservationService {
      * @param createReservationRequest
      * @return 생성된 예약 정보 (reservationId, reservationDate, reservationTime)
      */
+    @Transactional
     public CreateReservationResponse createReservation(HttpServletRequest request, CreateReservationRequest createReservationRequest) {
         String token = jwtUtil.getJwt(request);
 
@@ -40,6 +41,16 @@ public class ReservationService {
         Long userId = jwtUtil.getIdFromToken(token);
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new DefaultException(ErrorCode.USER_NOT_FOUND_ERROR));
+
+        boolean existsReservation = reservationRepository.existsByPlaceIdAndReservationDateAndReservationTime(
+                createReservationRequest.placeId(),
+                createReservationRequest.reservationDate(),
+                createReservationRequest.reservationTime()
+        );
+
+        if (existsReservation) {
+            throw new DefaultAuthenticationException(ErrorCode.RESERVATION_ALREADY_EXISTS_ERROR);
+        }
 
         Reservation reservation = Reservation.builder()
                 .user(user)
