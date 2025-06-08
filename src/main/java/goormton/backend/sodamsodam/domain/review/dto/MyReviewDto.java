@@ -16,13 +16,13 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Schema(description = "리뷰 응답 DTO")
-public class ReviewResponseDto {
+@Schema(description = "내가 작성한 리뷰 목록 항목 DTO")
+public class MyReviewDto {
     @Schema(description = "리뷰 ID")
     private Long reviewId;
 
-    @Schema(description = "작성자 이름")
-    private String username;
+    @Schema(description = "장소 ID")
+    private String placeId;
 
     @Schema(description = "리뷰 본문 내용", example = "맛있어요.")
     private String content;
@@ -36,10 +36,10 @@ public class ReviewResponseDto {
     @Schema(description = "작성일시", example = "2025-05-29T15:00:00")
     private LocalDateTime createdAt;
 
-    public static ReviewResponseDto from(Review review, String username, List<String> imageUrls) {
-        return ReviewResponseDto.builder()
+    public static MyReviewDto from(Review review, List<String> imageUrls) {
+        return MyReviewDto.builder()
                 .reviewId(review.getId())
-                .username(username)
+                .placeId(review.getPlaceId())
                 .content(review.getContent())
                 .tags(extractTags(review))
                 .imageUrls(imageUrls)
