@@ -20,9 +20,21 @@ public class Bookmark extends BaseEntity {
     @Column(name = "place_id", nullable = false)
     private String placeId;
 
+    @Column(name = "place_name")
+    private String placeName;
+
+    @Column(name = "phone")
+    private String phone;
+
+    @Column(name = "address_name")
+    private String addressName;
+
     @Builder
-    public Bookmark(User user, String placeId) {
+    public Bookmark(User user, String placeId, String placeName, String phone, String addressName) {
         this.user = user;
         this.placeId = placeId;
+        this.placeName = placeName;
+        this.phone = phone;
+        this.addressName = addressName;
     }
 }

@@ -8,7 +8,7 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
-public interface ImageRepository extends JpaRepository<Image, Long> {
+public interface ImageRepository extends JpaRepository<Image, Long>, ImageRepositoryQueryDsl {
     @Query("SELECT i.url FROM Image i WHERE i.review.id = :id")
     List<String> findUrlsByReviewId(@Param("id") Long reviewId);
 
