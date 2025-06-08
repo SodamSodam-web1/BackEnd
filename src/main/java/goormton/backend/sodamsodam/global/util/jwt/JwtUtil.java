@@ -2,8 +2,9 @@ package goormton.backend.sodamsodam.global.util.jwt;
 
 import goormton.backend.sodamsodam.global.error.DefaultException;
 import goormton.backend.sodamsodam.global.payload.ErrorCode;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
-import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -53,10 +54,9 @@ public class JwtUtil {
     }
 
     // token 추출
-    public String getJwt(HttpServletRequest request) {
-        String bearerToken = request.getHeader("Authorization");
-        if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
-            return bearerToken.substring(7);
+    public String getJwt(String token) {
+        if (StringUtils.hasText(token) && token.startsWith("Bearer ")) {
+            return token.substring(7);
         }
         throw new DefaultException(ErrorCode.INVALID_PARAMETER, "Authorization header is missing");
     }
@@ -76,12 +76,18 @@ public class JwtUtil {
 
 //    jwt 유효성 검증
     public Boolean validateToken(String token) {
-        final String username = getUsernameFromToken(token);
-        return (!isTokenExpired(token));
+        isTokenExpired(token);
+        return true;
     }
 
 //    jwt 토큰 만료 여부 확인
     public Boolean isTokenExpired(String token) {
-        return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().getExpiration().before(new Date());
+        try {
+            return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().getExpiration().before(new Date());
+        } catch (ExpiredJwtException e) {
+            throw new DefaultException(ErrorCode.JWT_EXPIRED_ERROR);
+        } catch (JwtException e) {
+            throw new DefaultException(ErrorCode.INVALID_JWT_ERROR);
+        }
     }
 }
