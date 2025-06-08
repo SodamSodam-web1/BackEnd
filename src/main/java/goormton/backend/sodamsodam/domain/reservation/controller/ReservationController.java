@@ -18,19 +18,19 @@ public class ReservationController {
 
     @PostMapping
     public ResponseCustom<CreateReservationResponse> createReservation(
-            HttpServletRequest request,
+            @RequestHeader("Authorization") String token,
             @RequestBody @Valid CreateReservationRequest createReservationRequest
     ) {
-        CreateReservationResponse createReservationResponse = reservationService.createReservation(request, createReservationRequest);
+        CreateReservationResponse createReservationResponse = reservationService.createReservation(token, createReservationRequest);
         return ResponseCustom.CREATED(createReservationResponse);
     }
 
     @DeleteMapping("/{id}")
     public ResponseCustom<?> deleteReservation(
-            HttpServletRequest request,
+            @RequestHeader("Authorization") String token,
             @PathVariable("id") Long reservationId
     ) {
-        reservationService.deleteReservation(request, reservationId);
+        reservationService.deleteReservation(token, reservationId);
         return ResponseCustom.OK();
     }
 }
