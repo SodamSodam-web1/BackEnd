@@ -9,6 +9,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PlaceResponseDto {
+
+    @Schema(description = "카카오 장소 ID", example = "26338954")
+    private String id;
+
     @Schema(description = "장소명 또는 업체명", example = "카카오프렌즈 롯데월드몰 잠실점")
     private String placeName;
 
@@ -21,6 +25,7 @@ public class PlaceResponseDto {
 
     public static PlaceResponseDto from(KakaoPlaceDto.Document document) {
         return new PlaceResponseDto(
+                document.getId(),
                 document.getPlace_name(),
                 document.getPhone(),
                 document.getAddress_name()
