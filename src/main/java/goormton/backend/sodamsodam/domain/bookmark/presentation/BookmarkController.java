@@ -5,6 +5,7 @@ import goormton.backend.sodamsodam.domain.bookmark.domain.Bookmark;
 import goormton.backend.sodamsodam.domain.bookmark.dto.request.BookmarkedPlaceRequest;
 import goormton.backend.sodamsodam.global.payload.ResponseCustom;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -32,10 +33,10 @@ public class BookmarkController {
     })
     @PostMapping("/places")
     public ResponseCustom<?> addBookmark(
-            HttpServletRequest request,
+            @Parameter(description = "Accesstoken을 입력해주세요.", required = true) @RequestHeader("Authorization") String bearerToken,
             @RequestBody BookmarkedPlaceRequest req
             ) {
-        Bookmark bookmark = bookmarkService.addBookmark(request, req);
+        Bookmark bookmark = bookmarkService.addBookmark(bearerToken, req);
         return ResponseCustom.CREATED(bookmark);
     }
 
@@ -46,10 +47,10 @@ public class BookmarkController {
     })
     @PostMapping("/{bookmarkId}")
     public ResponseCustom<?> removeBookmark(
-            HttpServletRequest request,
+            @Parameter(description = "Accesstoken을 입력해주세요.", required = true) @RequestHeader("Authorization") String bearerToken,
             @PathVariable Long bookmarkId
     ) {
-        bookmarkService.removeBookmark(request, bookmarkId);
+        bookmarkService.removeBookmark(bearerToken, bookmarkId);
         return ResponseCustom.OK();
     }
 }
