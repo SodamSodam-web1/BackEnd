@@ -20,6 +20,6 @@ public class ReviewEditResponseDto {
     @Schema(description = "리뷰 태그 목록 (최대 3개)")
     private List<ReviewTag> tags;
 
-    @Schema(description = "이미지 URL 목록 (최대 3개)")
-    private List<String> imageUrls;
+    @Schema(description = "이미지 정보 목록 (최대 3개)")
+    private List<ImageInfoDto> images;
 }

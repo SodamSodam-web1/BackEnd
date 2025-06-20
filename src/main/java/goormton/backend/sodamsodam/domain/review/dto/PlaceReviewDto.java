@@ -30,19 +30,19 @@ public class PlaceReviewDto {
     @Schema(description = "리뷰 태그 목록")
     private List<ReviewTag> tags;
 
-    @Schema(description = "이미지 URL 목록")
-    private List<String> imageUrls;
+    @Schema(description = "이미지 정보 목록")
+    private List<ImageInfoDto> images;
 
     @Schema(description = "작성일시", example = "2025-05-29T15:00:00")
     private LocalDateTime createdAt;
 
-    public static PlaceReviewDto from(Review review, String username, List<String> imageUrls) {
+    public static PlaceReviewDto from(Review review, String username, List<ImageInfoDto> images) {
         return PlaceReviewDto.builder()
                 .reviewId(review.getId())
                 .username(username)
                 .content(review.getContent())
                 .tags(extractTags(review))
-                .imageUrls(imageUrls)
+                .images(images)
                 .createdAt(review.getCreatedAt())
                 .build();
     }
