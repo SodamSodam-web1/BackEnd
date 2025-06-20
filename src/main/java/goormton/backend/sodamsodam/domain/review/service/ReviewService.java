@@ -67,7 +67,7 @@ public class ReviewService {
     public PlaceReviewListResponseDto getPlaceReviews(String placeId, Pageable pageable) {
         Page<Review> reviewPage = reviewRepository.findAllByPlaceIdWithUser(placeId, pageable);
 
-        List<ReviewResponseDto> reviewDtos = reviewPage.map(review -> {
+        List<PlaceReviewDto> reviewDtos = reviewPage.map(review -> {
             String username = review.getUser().getUsername();
             List<ImageInfoDto> images = review.getImages().stream()
                 .map(image -> new ImageInfoDto(
@@ -75,7 +75,7 @@ public class ReviewService {
                     image.getStoredFileName(),
                     image.getFileUrl()
                 )).toList();
-            return ReviewResponseDto.from(review, username, images);
+            return PlaceReviewDto.from(review, username, images);
         }).getContent();
 
         long totalCount = reviewPage.getTotalElements();
@@ -174,6 +174,21 @@ public class ReviewService {
                 .content(review.getContent())
                 .tags(tags)
                 .images(images)
+                .build();
+    }
+
+    @Transactional(readOnly = true)
+    public MyReviewListResponseDto getMyReviews(Long userId, Pageable pageable) {
+        Page<Review> reviewPage = reviewRepository.findAllByUserId(userId, pageable);
+
+        List<MyReviewDto> reviewDtos = reviewPage.map(review -> {
+            List<String> imageUrls = imageRepository.findUrlsByReviewId(review.getId());
+            return MyReviewDto.from(review, imageUrls);
+        }).getContent();
+
+        return MyReviewListResponseDto.builder()
+                .reviews(reviewDtos)
+                .hasNext(reviewPage.hasNext())
                 .build();
     }
 }

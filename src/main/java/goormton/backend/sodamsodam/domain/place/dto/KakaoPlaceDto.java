@@ -22,7 +22,7 @@ public class KakaoPlaceDto {
     @Data
     @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
     public static class Document {
-        private String id;
+        private String id;                 // 장소 id
         private String place_name;         // 장소명
         private String category_name;      // 카테고리 이름
         private String category_group_code; // 카테고리 그룹 코드 (ex. FD6, CE7 등)

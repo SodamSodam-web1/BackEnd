@@ -10,4 +10,6 @@ import org.springframework.data.repository.query.Param;
 public interface ReviewRepository extends JpaRepository<Review, Long> {
     @Query("SELECT r FROM Review r JOIN FETCH r.user WHERE r.placeId = :placeId")
     Page<Review> findAllByPlaceIdWithUser(@Param("placeId") String placeId, Pageable pageable);
+
+    Page<Review> findAllByUserId(Long userId, Pageable pageable);
 }

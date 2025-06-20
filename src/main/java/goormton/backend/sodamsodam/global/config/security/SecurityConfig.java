@@ -19,7 +19,6 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.oauth2.client.registration.ClientRegistration;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
@@ -65,20 +64,20 @@ public class SecurityConfig {
 //                              모든 get method는 허용
                                 .requestMatchers(HttpMethod.GET, "/**").permitAll()
 //                              유저 인증용 post method는 인증 없이 허용
-                                .requestMatchers(HttpMethod.POST, "/api/auth/**").permitAll()
+                                .requestMatchers(HttpMethod.POST, "/api/auth/**", "/oauth2/**").permitAll()
 //                              그 외의 모든 post method는 인증 필요
                                 .requestMatchers(HttpMethod.POST, "/**").authenticated()
 //                                혹시 모를 다른 모든 요청 역시 인증 필요
                                 .anyRequest().authenticated()
                 )
-//                jwt 필터 설정
-                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
 //                kakao 로그인 설정
                 .oauth2Login(oauth -> oauth
                         .userInfoEndpoint(u -> u
                                 .userService(principalOauth2UserService))
                         .successHandler(oAuth2SuccessHandler)
                 )
+//                jwt 필터 설정
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
 //                로그아웃 설정 추가
 //                .logout(logout -> logout
 //                        .logoutUrl("/api/auth/logout")
