@@ -25,20 +25,20 @@ public class ReservationService {
 
     /**
      * 예약 생성 메서드
-     * @param request
+     * @param token
      * @param createReservationRequest
      * @return 생성된 예약 정보 (reservationId, reservationDate, reservationTime)
      */
     @Transactional
-    public CreateReservationResponse createReservation(HttpServletRequest request, CreateReservationRequest createReservationRequest) {
-        String token = jwtUtil.getJwt(request);
+    public CreateReservationResponse createReservation(String token, CreateReservationRequest createReservationRequest) {
+        String accessToken = jwtUtil.getJwt(token);
 
         // Todo JWT 관련 로직 분리 필요
-        if (!jwtUtil.validateToken(token)) {
+        if (!jwtUtil.validateToken(accessToken)) {
             throw new DefaultAuthenticationException(ErrorCode.JWT_EXPIRED_ERROR);
         }
 
-        Long userId = jwtUtil.getIdFromToken(token);
+        Long userId = jwtUtil.getIdFromToken(accessToken);
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new DefaultException(ErrorCode.USER_NOT_FOUND_ERROR));
 
@@ -71,22 +71,22 @@ public class ReservationService {
     /**
      * 예약 취소 메서드
      * 흐름: 헤더에서 토큰 추출 → 토큰 검증 → 삭제 요청 들어온 예약 존재 여부 검증 → 삭제 요청한 사용자와 예약한 사용자 일치 여부 검증
-     * @param request
+     * @param token
      * @param reservationId
      */
     @Transactional
-    public void deleteReservation(HttpServletRequest request, Long reservationId) {
-        String token = jwtUtil.getJwt(request);
+    public void deleteReservation(String token, Long reservationId) {
+        String accessToken = jwtUtil.getJwt(token);
 
         // Todo JWT 관련 로직 분리 필요
-        if (!jwtUtil.validateToken(token)) {
+        if (!jwtUtil.validateToken(accessToken)) {
             throw new DefaultAuthenticationException(ErrorCode.JWT_EXPIRED_ERROR);
         }
 
         Reservation reservation = reservationRepository.findById(reservationId)
                 .orElseThrow(() -> new DefaultException(ErrorCode.RESERVATION_NOT_FOUND));
 
-        Long userId = jwtUtil.getIdFromToken(token);
+        Long userId = jwtUtil.getIdFromToken(accessToken);
         if (!reservation.getUser().getId().equals(userId)) {
             throw new DefaultException(ErrorCode.FORBIDDEN_RESERVATION_DELETE);
         }
