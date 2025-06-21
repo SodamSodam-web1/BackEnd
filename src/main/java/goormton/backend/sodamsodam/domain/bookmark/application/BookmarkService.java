@@ -10,11 +10,11 @@ import java.util.List;
 public interface BookmarkService {
 
     // 유저로부터 요청 받아 북마크를 생성
-    Bookmark addBookmark(HttpServletRequest request, BookmarkedPlaceRequest req);
+    Bookmark addBookmark(String bearerToken, BookmarkedPlaceRequest req);
 
     // 유저로부터 delete 요청을 받아 북마크를 삭제
-    void removeBookmark(HttpServletRequest request, Long bookmarkId);
+    void removeBookmark(String bearerToken, Long bookmarkId);
 
     // 유저 인증 후 유저의 북마크 리스트 조회
-    List<BookmarkedPlaceResponse> getAllBookmarkedPlaces(HttpServletRequest request);
+    List<BookmarkedPlaceResponse> getAllBookmarkedPlaces(String bearerToken);
 }

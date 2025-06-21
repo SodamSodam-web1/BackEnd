@@ -18,7 +18,7 @@ public class ImageRepositoryImpl implements ImageRepositoryQueryDsl {
         QReview review = QReview.review;
 
         return queryFactory
-                .select(image.url)
+                .select(image.fileUrl)
                 .from(image)
                 .join(image.review, review)
                 .where(review.placeId.eq(placeId))

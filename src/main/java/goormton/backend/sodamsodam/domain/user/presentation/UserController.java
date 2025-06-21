@@ -4,12 +4,13 @@ import goormton.backend.sodamsodam.domain.bookmark.application.BookmarkService;
 import goormton.backend.sodamsodam.domain.bookmark.dto.response.BookmarkedPlaceResponse;
 import goormton.backend.sodamsodam.global.payload.ResponseCustom;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -30,9 +31,9 @@ public class UserController {
     })
     @GetMapping("/bookmarks")
     public ResponseCustom<?> getMyBookmarks(
-            HttpServletRequest request
+            @Parameter(description = "Accesstoken을 입력해주세요.", required = true) @RequestHeader("Authorization") String bearerToken
     ) {
-        List<BookmarkedPlaceResponse> resp = bookmarkService.getAllBookmarkedPlaces(request);
+        List<BookmarkedPlaceResponse> resp = bookmarkService.getAllBookmarkedPlaces(bearerToken);
         return ResponseCustom.OK(resp);
     }
 }

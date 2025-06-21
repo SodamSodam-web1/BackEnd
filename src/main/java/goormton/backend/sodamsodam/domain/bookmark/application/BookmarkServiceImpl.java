@@ -32,8 +32,8 @@ public class BookmarkServiceImpl implements BookmarkService {
 
     @Transactional
     @Override
-    public Bookmark addBookmark(HttpServletRequest request, BookmarkedPlaceRequest req) {
-        String token = jwtUtil.getJwt(request);
+    public Bookmark addBookmark(String bearerToken, BookmarkedPlaceRequest req) {
+        String token = jwtUtil.getJwt(bearerToken);
         Long userId = jwtUtil.getIdFromToken(token);
         User user = userRepository.findById(userId).orElseThrow(() -> new DefaultException(ErrorCode.USER_NOT_FOUND_ERROR));
         bookmarkRepository.findByUserAndPlaceId(user, req.placeId())
@@ -54,8 +54,8 @@ public class BookmarkServiceImpl implements BookmarkService {
 
     @Transactional
     @Override
-    public void removeBookmark(HttpServletRequest request, Long bookmarkId) {
-        String token = jwtUtil.getJwt(request);
+    public void removeBookmark(String bearerToken, Long bookmarkId) {
+        String token = jwtUtil.getJwt(bearerToken);
         Long userId = jwtUtil.getIdFromToken(token);
         userRepository.findById(userId).orElseThrow(() -> new DefaultException(ErrorCode.USER_NOT_FOUND_ERROR));
         Bookmark existing = bookmarkRepository.findById(bookmarkId).orElseThrow(() -> new DefaultException(ErrorCode.BOOKMARK_NOT_FOUND_ERROR));
@@ -64,8 +64,8 @@ public class BookmarkServiceImpl implements BookmarkService {
 
     @Transactional
     @Override
-    public List<BookmarkedPlaceResponse> getAllBookmarkedPlaces(HttpServletRequest resp) {
-        String token = jwtUtil.getJwt(resp);
+    public List<BookmarkedPlaceResponse> getAllBookmarkedPlaces(String bearerToken) {
+        String token = jwtUtil.getJwt(bearerToken);
         Long userId = jwtUtil.getIdFromToken(token);
         User user = userRepository.findById(userId).orElseThrow(() -> new DefaultException(ErrorCode.USER_NOT_FOUND_ERROR));
 
