@@ -3,6 +3,7 @@ package goormton.backend.sodamsodam.domain.place.controller;
 import goormton.backend.sodamsodam.domain.place.dto.PlaceResponseDto;
 import goormton.backend.sodamsodam.domain.place.dto.SearchHistoryDto;
 import goormton.backend.sodamsodam.domain.place.service.PlaceService;
+import goormton.backend.sodamsodam.domain.user.domain.User;
 import goormton.backend.sodamsodam.domain.user.domain.UserPrincipal;
 import goormton.backend.sodamsodam.global.error.DefaultException;
 import goormton.backend.sodamsodam.global.payload.ErrorCode;
@@ -45,8 +46,15 @@ public class PlaceController {
                     "특정 지역을 중심으로 검색할 경우 radius와 함께 사용 가능") @RequestParam(required = false) String y,
             @Parameter(description = "중심 좌표부터의 반경거리. 특정 지역을 중심으로 검색하려고 할 경우 중심좌표로 쓰일 x,y와 함께 사용\n" +
                     "(단위: 미터(m), 최소: 0, 최대: 20000)") @RequestParam(required = false) Integer radius) {
-        UserPrincipal userPrincipal = (UserPrincipal) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        List<PlaceResponseDto> places = placeService.searchByKeyword(query, x, y, radius, userPrincipal.getUser());
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        User user = null;
+        
+        if (authentication != null && authentication.isAuthenticated() && 
+            authentication.getPrincipal() instanceof UserPrincipal) {
+            user = ((UserPrincipal) authentication.getPrincipal()).getUser();
+        }
+        
+        List<PlaceResponseDto> places = placeService.searchByKeyword(query, x, y, radius, user);
         return ResponseEntity.ok(places);
     }
 
@@ -64,8 +72,15 @@ public class PlaceController {
                     "특정 지역을 중심으로 검색하려고 할 경우 radius와 함께 사용 가능.") @RequestParam(required = false) String y,
             @Parameter(description = "중심 좌표부터의 반경거리. 특정 지역을 중심으로 검색하려고 할 경우 중심좌표로 쓰일 x,y와 함께 사용\n" +
                     "(단위: 미터(m), 최소: 0, 최대: 20000)") @RequestParam(required = false) Integer radius) {
-        UserPrincipal userPrincipal = (UserPrincipal) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        List<PlaceResponseDto> places = placeService.searchByCategory(category_group_code, x, y, radius, userPrincipal.getUser());
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        User user = null;
+        
+        if (authentication != null && authentication.isAuthenticated() && 
+            authentication.getPrincipal() instanceof UserPrincipal) {
+            user = ((UserPrincipal) authentication.getPrincipal()).getUser();
+        }
+        
+        List<PlaceResponseDto> places = placeService.searchByCategory(category_group_code, x, y, radius, user);
         return ResponseEntity.ok(places);
     }
 
