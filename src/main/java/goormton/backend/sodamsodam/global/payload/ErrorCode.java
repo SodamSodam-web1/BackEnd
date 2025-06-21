@@ -30,8 +30,18 @@ public enum ErrorCode {
     BOOKMARK_ALREADY_EXISTS_ERROR(HttpStatus.CONFLICT, null, "이미 북마크된 장소입니다."),
     BOOKMARK_NOT_FOUND_ERROR(HttpStatus.NOT_FOUND, null , "해당 장소를 북마크하지 않았습니다."),
 
+    // Reservation Error
+    RESERVATION_ALREADY_EXISTS_ERROR(HttpStatus.CONFLICT, null, "이미 예약이 찼습니다."),
+    RESERVATION_NOT_FOUND(HttpStatus.NOT_FOUND, null, "존재하지 않는 예약입니다."),
+    FORBIDDEN_RESERVATION_DELETE(HttpStatus.FORBIDDEN, null, "본인의 예약만 취소할 수 있습니다."),
+
     // JWT 토큰
     JWT_EXPIRED_ERROR(HttpStatus.BAD_REQUEST, null, "JWT 토큰이 만료되었습니다."),
+    INVALID_JWT_ERROR(HttpStatus.BAD_REQUEST, null, "유효하지 않은 JWT 표현입니다."),
+
+    // File Upload
+    INVALID_IMAGE_FORMAT(HttpStatus.BAD_REQUEST, null, "지원하지 않는 이미지 형식입니다. jpg, jpeg, png, HEIC, gif 형식만 지원합니다."),
+    INVALID_FILE_NAME(HttpStatus.BAD_REQUEST, null, "잘못된 파일명입니다.")
     ;
 
     private final HttpStatus httpStatus;

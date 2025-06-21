@@ -12,17 +12,11 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Schema(description = "장소별 리뷰 목록 응답 DTO")
-public class PlaceReviewListResponseDto {
-    @Schema(description = "장소 ID")
-    private String placeId;
-
+@Schema(description = "내 리뷰 목록 응답 DTO")
+public class MyReviewListResponseDto {
     @Schema(description = "리뷰 응답 리스트")
-    private List<PlaceReviewDto> reviews;
+    private List<MyReviewDto> reviews;
 
     @Schema(description = "다음 페이지 존재 여부", example = "true")
     private boolean hasNext;
-
-    @Schema(description = "전체 리뷰 개수")
-    private long totalCount;
 }

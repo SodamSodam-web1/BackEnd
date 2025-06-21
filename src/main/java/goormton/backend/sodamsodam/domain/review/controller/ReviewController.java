@@ -3,6 +3,7 @@ package goormton.backend.sodamsodam.domain.review.controller;
 import goormton.backend.sodamsodam.domain.review.dto.*;
 import goormton.backend.sodamsodam.domain.review.service.ReviewService;
 import goormton.backend.sodamsodam.global.payload.ResponseCustom;
+import goormton.backend.sodamsodam.global.service.S3Service;
 import goormton.backend.sodamsodam.global.util.jwt.JwtUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -14,7 +15,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -24,6 +29,21 @@ import org.springframework.web.bind.annotation.*;
 public class ReviewController {
     private final ReviewService reviewService;
     private final JwtUtil jwtUtil;
+    private final S3Service s3Service;
+
+    @Operation(summary = "리뷰 이미지 업로드", description = "리뷰에 첨부할 이미지를 업로드합니다.")
+    @PostMapping(value = "/upload/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseCustom<List<S3Service.S3UploadResult>> uploadReviewImage(
+            @Parameter(description = "AccessToken을 입력해주세요", required = true)
+            @RequestHeader("Authorization") String token,
+            @Parameter(description = "이미지 파일", required = true)
+            @RequestParam("file") List<MultipartFile> files
+    ) {
+        List<S3Service.S3UploadResult> results = files.stream()
+                .map(s3Service::uploadFile)
+                .toList();
+        return ResponseCustom.OK(results);
+    }
 
     @Operation(summary = "리뷰 작성", description = "로그인된 사용자가 특정 장소에 리뷰를 작성합니다.")
     @PostMapping("/places/{placeId}/reviews")
@@ -77,11 +97,6 @@ public class ReviewController {
     }
 
     @Operation(summary = "본인 리뷰 단건 조회", description = "리뷰 수정 전, 본인이 작성한 리뷰의 내용을 불러옵니다.")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "리뷰 조회 성공"),
-            @ApiResponse(responseCode = "403", description = "본인이 작성한 리뷰가 아님"),
-            @ApiResponse(responseCode = "404", description = "리뷰를 찾을 수 없음")
-    })
     @GetMapping("/reviews/{reviewId}")
     public ResponseCustom<ReviewEditResponseDto> getReviewForEdit(
             @Parameter(description = "AccessToken을 입력해주세요", required = true)
@@ -91,6 +106,22 @@ public class ReviewController {
         Long userId = jwtUtil.getIdFromToken(token.replace("Bearer ", ""));
 
         ReviewEditResponseDto responseDto = reviewService.getReviewForEdit(userId, reviewId);
+        return ResponseCustom.OK(responseDto);
+    }
+
+    @Operation(summary = "내 리뷰 목록 조회",description = "로그인한 사용자가 작성한 리뷰 목록을 최신순으로 조회합니다. ")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "내 리뷰 목록 조회 성공"),
+    })
+    @GetMapping("/my/reviews")
+    public ResponseCustom<MyReviewListResponseDto> getMyReviews(
+            @Parameter(description = "AccessToken을 입력해주세요", required = true)
+            @RequestHeader("Authorization") String token,
+            @Parameter(hidden = true) @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable
+    ) {
+        Long userId = jwtUtil.getIdFromToken(token.replace("Bearer ", ""));
+
+        MyReviewListResponseDto responseDto = reviewService.getMyReviews(userId, pageable);
         return ResponseCustom.OK(responseDto);
     }
 }
