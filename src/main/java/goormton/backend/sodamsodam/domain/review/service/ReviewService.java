@@ -33,13 +33,22 @@ public class ReviewService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new DefaultException(ErrorCode.USER_NOT_FOUND_ERROR));
 
+        List<ReviewTag> tags = dto.getTags();
+        if (tags != null && !tags.isEmpty()) {
+            validateDuplicateTags(tags);
+        }
+
+        ReviewTag tag1 = tags != null && !tags.isEmpty() ? tags.get(0) : null;
+        ReviewTag tag2 = tags != null && tags.size() > 1 ? tags.get(1) : null;
+        ReviewTag tag3 = tags != null && tags.size() > 2 ? tags.get(2) : null;
+
         Review review = Review.builder()
                 .user(user)
                 .placeId(placeId)
                 .content(dto.getContent())
-                .tag1(dto.getTag1())
-                .tag2(dto.getTag2())
-                .tag3(dto.getTag3())
+                .tag1(tag1)
+                .tag2(tag2)
+                .tag3(tag3)
                 .build();
 
         reviewRepository.save(review);
