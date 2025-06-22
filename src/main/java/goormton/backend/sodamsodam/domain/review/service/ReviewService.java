@@ -10,6 +10,7 @@ import goormton.backend.sodamsodam.domain.user.domain.User;
 import goormton.backend.sodamsodam.domain.user.domain.repository.UserRepository;
 import goormton.backend.sodamsodam.global.error.DefaultException;
 import goormton.backend.sodamsodam.global.payload.ErrorCode;
+import goormton.backend.sodamsodam.global.util.jwt.JwtUtil;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -27,9 +28,13 @@ public class ReviewService {
     final private ReviewRepository reviewRepository;
     final private UserRepository userRepository;
     final private ImageRepository imageRepository;
+    final private JwtUtil jwtUtil;
 
     @Transactional
-    public ReviewCreateResponseDto createReview(Long userId, String placeId, ReviewCreateRequestDto dto) {
+    public ReviewCreateResponseDto createReview(String bearerToken, String placeId, ReviewCreateRequestDto dto) {
+        String token = jwtUtil.getJwt(bearerToken);
+        Long userId = jwtUtil.getIdFromToken(token);
+
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new DefaultException(ErrorCode.USER_NOT_FOUND_ERROR));
 
@@ -79,11 +84,11 @@ public class ReviewService {
         List<PlaceReviewDto> reviewDtos = reviewPage.map(review -> {
             String username = review.getUser().getUsername();
             List<ImageInfoDto> images = review.getImages().stream()
-                .map(image -> new ImageInfoDto(
-                    image.getOriginalFileName(),
-                    image.getStoredFileName(),
-                    image.getFileUrl()
-                )).toList();
+                    .map(image -> new ImageInfoDto(
+                            image.getOriginalFileName(),
+                            image.getStoredFileName(),
+                            image.getFileUrl()
+                    )).toList();
             return PlaceReviewDto.from(review, username, images);
         }).getContent();
 
@@ -98,7 +103,10 @@ public class ReviewService {
     }
 
     @Transactional
-    public void updateReview(Long userId, Long reviewId, ReviewUpdateRequestDto dto) {
+    public void updateReview(String bearerToken, Long reviewId, ReviewUpdateRequestDto dto) {
+        String token = jwtUtil.getJwt(bearerToken);
+        Long userId = jwtUtil.getIdFromToken(token);
+
         Review review = reviewRepository.findById(reviewId)
                 .orElseThrow(() -> new DefaultException(ErrorCode.REVIEW_NOT_FOUND_ERROR));
 
@@ -137,7 +145,10 @@ public class ReviewService {
     }
 
     @Transactional
-    public void deleteReview(Long userId, Long reviewId) {
+    public void deleteReview(String bearerToken, Long reviewId) {
+        String token = jwtUtil.getJwt(bearerToken);
+        Long userId = jwtUtil.getIdFromToken(token);
+
         Review review = reviewRepository.findById(reviewId)
                 .orElseThrow(() -> new DefaultException(ErrorCode.REVIEW_NOT_FOUND_ERROR));
 
@@ -159,7 +170,10 @@ public class ReviewService {
     }
 
     @Transactional(readOnly = true)
-    public ReviewEditResponseDto getReviewForEdit(Long userId, Long reviewId) {
+    public ReviewEditResponseDto getReviewForEdit(String bearerToken, Long reviewId) {
+        String token = jwtUtil.getJwt(bearerToken);
+        Long userId = jwtUtil.getIdFromToken(token);
+
         Review review = reviewRepository.findById(reviewId)
                 .orElseThrow(() -> new DefaultException(ErrorCode.REVIEW_NOT_FOUND_ERROR));
 
@@ -168,11 +182,11 @@ public class ReviewService {
         }
 
         List<ImageInfoDto> images = review.getImages().stream()
-            .map(image -> new ImageInfoDto(
-                image.getOriginalFileName(),
-                image.getStoredFileName(),
-                image.getFileUrl()
-            )).toList();
+                .map(image -> new ImageInfoDto(
+                        image.getOriginalFileName(),
+                        image.getStoredFileName(),
+                        image.getFileUrl()
+                )).toList();
 
         List<ReviewTag> tags = new ArrayList<>();
         if (review.getTag1() != null) tags.add(review.getTag1());
@@ -187,7 +201,10 @@ public class ReviewService {
     }
 
     @Transactional(readOnly = true)
-    public MyReviewListResponseDto getMyReviews(Long userId, Pageable pageable) {
+    public MyReviewListResponseDto getMyReviews(String bearerToken, Pageable pageable) {
+        String token = jwtUtil.getJwt(bearerToken);
+        Long userId = jwtUtil.getIdFromToken(token);
+
         Page<Review> reviewPage = reviewRepository.findAllByUserId(userId, pageable);
 
         List<MyReviewDto> reviewDtos = reviewPage.map(review -> {
