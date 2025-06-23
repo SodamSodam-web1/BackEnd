@@ -26,7 +26,7 @@ jobs:
         run: |
           mkdir ./src/main/resources
           touch ./src/main/resources/application.yml
-          echo "${{ secrets.APPLICATION_YML }}" >> src/main/resources/application.yml
+          echo "%b" "${{ secrets.APPLICATION_YML }}" >> src/main/resources/application.yml
 
       ## create firebase-service-key.json
 #      - name: create firebase_service_key.json file
