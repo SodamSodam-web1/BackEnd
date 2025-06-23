@@ -66,7 +66,7 @@ public class SecurityConfig {
 //                              유저 인증용 post method는 인증 없이 허용
                                 .requestMatchers(HttpMethod.POST, "/api/auth/**", "/oauth2/**").permitAll()
 //                              그 외의 모든 post method는 인증 필요
-                                .requestMatchers(HttpMethod.POST, "/**").authenticated()
+                                .requestMatchers(HttpMethod.POST, "/**").permitAll()
 //                                혹시 모를 다른 모든 요청 역시 인증 필요
                                 .anyRequest().authenticated()
                 )
