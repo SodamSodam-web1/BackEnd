@@ -4,4 +4,5 @@ import java.util.List;
 
 public interface ImageRepositoryQueryDsl {
     List<String> findTop3UrlsByPlaceId(String placeId);
+    List<String> findAllUrlsByPlaceId(String placeId);
 }
