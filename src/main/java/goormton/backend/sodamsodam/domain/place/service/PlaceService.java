@@ -5,6 +5,7 @@ import goormton.backend.sodamsodam.domain.place.dto.PlaceResponseDto;
 import goormton.backend.sodamsodam.domain.place.entity.Search;
 import goormton.backend.sodamsodam.domain.place.repository.SearchRepository;
 import goormton.backend.sodamsodam.domain.place.dto.SearchHistoryDto;
+import goormton.backend.sodamsodam.domain.review.repository.ImageRepository;
 import goormton.backend.sodamsodam.domain.user.domain.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,9 +30,13 @@ public class PlaceService {
     private String kakaoApiKey;
 
     private final SearchRepository searchRepository;
+    private final ImageRepository imageRepository;
 
     public List<PlaceResponseDto> searchByKeyword(String query, String x, String y, Integer radius, User user) {
-        searchRepository.save(new Search(query, user));
+        if (user != null) {
+            searchRepository.save(new Search(query, user));
+        }
+        
         try {
             KakaoPlaceDto response = webClient.get()
                     .uri(uriBuilder -> {
@@ -51,10 +56,13 @@ public class PlaceService {
                     .doOnError(error -> log.error("Kakao API Error: {}", error.getMessage()))
                     .block();
 
-
             if (response != null && response.getDocuments() != null) {
                 return response.getDocuments().stream()
-                        .map(PlaceResponseDto::from)
+                        .map(document -> {
+                            // 각 장소의 모든 리뷰 이미지 조회
+                            List<String> imageUrls = imageRepository.findAllUrlsByPlaceId(document.getId());
+                            return PlaceResponseDto.from(document, imageUrls);
+                        })
                         .collect(Collectors.toList());
             }
 
@@ -72,7 +80,10 @@ public class PlaceService {
             String y,
             Integer radius,
             User user) {
-        searchRepository.save(new Search(category_group_code, user));
+        if (user != null) {
+            searchRepository.save(new Search(category_group_code, user));
+        }
+        
         try {
             KakaoPlaceDto response = webClient.get()
                     .uri(uriBuilder -> {
@@ -93,10 +104,13 @@ public class PlaceService {
                     .doOnError(error -> log.error("Kakao API Error: {}", error.getMessage()))
                     .block();
 
-
             if (response != null && response.getDocuments() != null) {
                 return response.getDocuments().stream()
-                        .map(PlaceResponseDto::from)
+                        .map(document -> {
+                            // 각 장소의 모든 리뷰 이미지 조회
+                            List<String> imageUrls = imageRepository.findAllUrlsByPlaceId(document.getId());
+                            return PlaceResponseDto.from(document, imageUrls);
+                        })
                         .collect(Collectors.toList());
             }
 

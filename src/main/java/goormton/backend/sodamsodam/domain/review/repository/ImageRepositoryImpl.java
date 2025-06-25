@@ -26,4 +26,18 @@ public class ImageRepositoryImpl implements ImageRepositoryQueryDsl {
                 .limit(3)
                 .fetch();
     }
+
+    @Override
+    public List<String> findAllUrlsByPlaceId(String placeId) {
+        QImage image = QImage.image;
+        QReview review = QReview.review;
+
+        return queryFactory
+                .select(image.fileUrl)
+                .from(image)
+                .join(image.review, review)
+                .where(review.placeId.eq(placeId))
+                .orderBy(image.createdAt.desc())
+                .fetch();
+    }
 }
