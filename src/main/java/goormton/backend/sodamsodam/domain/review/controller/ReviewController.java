@@ -53,8 +53,7 @@ public class ReviewController {
             @PathVariable String placeId,
             @Valid @RequestBody ReviewCreateRequestDto requestDto
     ) {
-        Long userId = jwtUtil.getIdFromToken(token.replace("Bearer ", ""));
-        ReviewCreateResponseDto responseDto = reviewService.createReview(userId, placeId, requestDto);
+        ReviewCreateResponseDto responseDto = reviewService.createReview(token, placeId, requestDto);
         return ResponseCustom.CREATED(responseDto);
     }
 
@@ -77,9 +76,7 @@ public class ReviewController {
             @PathVariable Long reviewId,
             @Valid @RequestBody ReviewUpdateRequestDto requestDto
     ){
-        Long userId = jwtUtil.getIdFromToken(token.replace("Bearer ", ""));
-
-        reviewService.updateReview(userId, reviewId, requestDto);
+        reviewService.updateReview(token, reviewId, requestDto);
         return ResponseCustom.OK();
     }
 
@@ -90,9 +87,7 @@ public class ReviewController {
             @RequestHeader("Authorization") String token,
             @PathVariable Long reviewId
     ){
-        Long userId = jwtUtil.getIdFromToken(token.replace("Bearer ", ""));
-
-        reviewService.deleteReview(userId, reviewId);
+        reviewService.deleteReview(token, reviewId);
         return ResponseCustom.OK();
     }
 
@@ -103,9 +98,7 @@ public class ReviewController {
             @RequestHeader("Authorization") String token,
             @PathVariable Long reviewId
     ) {
-        Long userId = jwtUtil.getIdFromToken(token.replace("Bearer ", ""));
-
-        ReviewEditResponseDto responseDto = reviewService.getReviewForEdit(userId, reviewId);
+        ReviewEditResponseDto responseDto = reviewService.getReviewForEdit(token, reviewId);
         return ResponseCustom.OK(responseDto);
     }
 
@@ -119,9 +112,7 @@ public class ReviewController {
             @RequestHeader("Authorization") String token,
             @Parameter(hidden = true) @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable
     ) {
-        Long userId = jwtUtil.getIdFromToken(token.replace("Bearer ", ""));
-
-        MyReviewListResponseDto responseDto = reviewService.getMyReviews(userId, pageable);
+        MyReviewListResponseDto responseDto = reviewService.getMyReviews(token, pageable);
         return ResponseCustom.OK(responseDto);
     }
 }
