@@ -13,4 +13,4 @@ public class WebClientConfig {
                 .baseUrl("https://dapi.kakao.com")
                 .build();
     }
-} 
+}
