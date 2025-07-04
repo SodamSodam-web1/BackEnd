@@ -35,6 +35,9 @@ public class Image {
     @Column(nullable = false)
     private Long fileSize;              // 파일 크기 (bytes)
 
+    @Column(nullable = false)
+    private String placeId;
+
     @CreatedDate
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
