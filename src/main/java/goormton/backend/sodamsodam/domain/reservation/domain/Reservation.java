@@ -23,6 +23,12 @@ public class Reservation extends BaseEntity {
     @Column(name = "place_id")
     private String placeId;
 
+    @Column(name = "place_name")
+    private String placeName;
+
+    @Column(name = "address_name", columnDefinition = "TEXT")
+    private String addressName;
+
     @Column(name = "reservation_date")
     private LocalDate reservationDate;
 
@@ -33,9 +39,11 @@ public class Reservation extends BaseEntity {
     }
 
     @Builder
-    public Reservation(User user, String placeId, LocalDate reservationDate, LocalTime reservationTime) {
+    public Reservation(User user, String placeId, String placeName, String addressName, LocalDate reservationDate, LocalTime reservationTime) {
         this.user = user;
         this.placeId = placeId;
+        this.placeName = placeName;
+        this.addressName = addressName;
         this.reservationDate = reservationDate;
         this.reservationTime = reservationTime;
     }
