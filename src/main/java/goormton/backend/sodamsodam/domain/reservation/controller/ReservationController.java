@@ -2,12 +2,14 @@ package goormton.backend.sodamsodam.domain.reservation.controller;
 
 import goormton.backend.sodamsodam.domain.reservation.dto.request.CreateReservationRequest;
 import goormton.backend.sodamsodam.domain.reservation.dto.response.CreateReservationResponse;
+import goormton.backend.sodamsodam.domain.reservation.dto.response.ReservationListResponse;
 import goormton.backend.sodamsodam.domain.reservation.service.ReservationService;
 import goormton.backend.sodamsodam.global.payload.ResponseCustom;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RequiredArgsConstructor
 @RequestMapping("/api/reservations")
@@ -23,6 +25,14 @@ public class ReservationController {
     ) {
         CreateReservationResponse createReservationResponse = reservationService.createReservation(token, createReservationRequest);
         return ResponseCustom.CREATED(createReservationResponse);
+    }
+
+    @GetMapping
+    public ResponseCustom<List<ReservationListResponse>> reservationList(
+            @RequestHeader("Authorization") String token
+    ) {
+        List<ReservationListResponse> reservationListResponses = reservationService.getReservationList(token);
+        return ResponseCustom.OK(reservationListResponses);
     }
 
     @DeleteMapping("/{id}")

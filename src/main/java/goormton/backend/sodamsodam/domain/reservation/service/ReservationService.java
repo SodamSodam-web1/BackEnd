@@ -3,7 +3,9 @@ package goormton.backend.sodamsodam.domain.reservation.service;
 import goormton.backend.sodamsodam.domain.reservation.domain.Reservation;
 import goormton.backend.sodamsodam.domain.reservation.dto.request.CreateReservationRequest;
 import goormton.backend.sodamsodam.domain.reservation.dto.response.CreateReservationResponse;
+import goormton.backend.sodamsodam.domain.reservation.dto.response.ReservationListResponse;
 import goormton.backend.sodamsodam.domain.reservation.repository.ReservationRepository;
+import goormton.backend.sodamsodam.domain.review.repository.ImageRepository;
 import goormton.backend.sodamsodam.domain.user.domain.User;
 import goormton.backend.sodamsodam.domain.user.domain.repository.UserRepository;
 import goormton.backend.sodamsodam.global.error.DefaultAuthenticationException;
@@ -14,12 +16,18 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
+
 @RequiredArgsConstructor
 @Service
 public class ReservationService {
 
     private final ReservationRepository reservationRepository;
     private final UserRepository userRepository;
+    private final ImageRepository imageRepository;
     private final JwtUtil jwtUtil;
 
     /**
@@ -67,6 +75,41 @@ public class ReservationService {
                 reservation.getReservationDate(),
                 reservation.getReservationTime()
         );
+    }
+
+    /**
+     * 예약 리스트 조회 메서드
+     * @param token
+     * @return List<ReservationListResponse>
+     */
+    public List<ReservationListResponse> getReservationList(String token) {
+        String accessToken = jwtUtil.getJwt(token);
+
+        // Todo JWT 관련 로직 분리 필요
+        if (!jwtUtil.validateToken(accessToken)) {
+            throw new DefaultAuthenticationException(ErrorCode.JWT_EXPIRED_ERROR);
+        }
+
+        Long userId = jwtUtil.getIdFromToken(accessToken);
+        List<Reservation> reservationList = reservationRepository.findByUserId(userId);
+
+
+
+        List<ReservationListResponse> reservationListResponses = new ArrayList<>();
+        for (Reservation reservation : reservationList) {
+            Long reservationId = reservation.getId();
+            String placeId = reservation.getPlaceId();
+            String placeName = reservation.getPlaceName();
+            String addressName = reservation.getAddressName();
+            String image = imageRepository.findOneImageUrlByPlaceId(placeId);
+            LocalDate reservationDate = reservation.getReservationDate();
+            LocalTime reservationTime = reservation.getReservationTime();
+
+            ReservationListResponse reservationListResponse
+                    = new ReservationListResponse(reservationId, placeName,  addressName, image, reservationDate, reservationTime);
+            reservationListResponses.add(reservationListResponse);
+        }
+        return reservationListResponses;
     }
 
     /**
