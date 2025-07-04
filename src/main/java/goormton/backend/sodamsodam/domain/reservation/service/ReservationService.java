@@ -10,7 +10,6 @@ import goormton.backend.sodamsodam.global.error.DefaultAuthenticationException;
 import goormton.backend.sodamsodam.global.error.DefaultException;
 import goormton.backend.sodamsodam.global.payload.ErrorCode;
 import goormton.backend.sodamsodam.global.util.jwt.JwtUtil;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -55,6 +54,8 @@ public class ReservationService {
         Reservation reservation = Reservation.builder()
                 .user(user)
                 .placeId(createReservationRequest.placeId())
+                .placeName(createReservationRequest.placeName())
+                .addressName(createReservationRequest.addressName())
                 .reservationDate(createReservationRequest.reservationDate())
                 .reservationTime(createReservationRequest.reservationTime())
                 .build();
