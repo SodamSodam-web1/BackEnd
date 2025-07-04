@@ -40,4 +40,15 @@ public class ImageRepositoryImpl implements ImageRepositoryQueryDsl {
                 .orderBy(image.createdAt.desc())
                 .fetch();
     }
+
+    public String findOneImageUrlByPlaceId(String placeId) {
+        QImage image = QImage.image;
+
+        return queryFactory
+                .select(image.fileUrl)
+                .from(image)
+                .where(image.placeId.eq(placeId))
+                .orderBy(image.createdAt.desc())
+                .fetchFirst();
+    }
 }
