@@ -6,8 +6,11 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
 
 @Repository
 public interface ReservationRepository extends JpaRepository<Reservation, Long> {
     boolean existsByPlaceIdAndReservationDateAndReservationTime(String placeId, LocalDate reservationDate, LocalTime reservationTime);
+
+    List<Reservation> findByUserId(Long userId);
 }
